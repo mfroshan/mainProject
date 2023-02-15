@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 // components
 import Iconify from '../../../components/iconify';
-import Scrollbar from '../../../components/scrollbar';
+import Scrollbar from '../../../components/Scrollbar';
 import { ColorMultiPicker } from '../../../components/color-utils';
 
 // ----------------------------------------------------------------------

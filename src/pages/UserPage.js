@@ -1,17 +1,16 @@
+import Axios from 'axios';
+import {Link as Rlink } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
   Card,
   Table,
   Stack,
   Paper,
-  Avatar,
   Button,
   Popover,
-  Checkbox,
   TableRow,
   MenuItem,
   TableBody,
@@ -25,21 +24,21 @@ import {
 // components
 import Label from '../components/label';
 import Iconify from '../components/iconify';
-import Scrollbar from '../components/scrollbar';
+import Scrollbar from '../components/Scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
-import USERLIST from '../_mock/user';
+// import USERLIST from '../_mock/User';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
+ 
+  { id: 'First_Name', label: 'First Name', alignLeft: false },
+  { id: 'Last_Name', label: 'Last Name', alignRight: false },
+  { id: 'username', label: 'Username', alignRight: false },
+  { id: 'Status', label: 'Status', alignRight: false },
+  
 ];
 
 // ----------------------------------------------------------------------
@@ -68,12 +67,19 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.host_fname.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
+
+
+
+
 export default function UserPage() {
+  
+
+
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -88,9 +94,25 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [USERLIST, setUserList] = useState([]);
+
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
+
+ 
+
+  const list = () =>{
+    Axios.post("http://localhost:3001/hostdisplay", {
+    }).then((response) =>{
+        // setdata(response);
+         setUserList(response.data);
+        // console.log(response.data);
+    });
+  }  
+  useEffect(()=>{
+    list();
+  },[]);
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -111,20 +133,6 @@ export default function UserPage() {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-    }
-    setSelected(newSelected);
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -149,13 +157,13 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> Host </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Host
           </Typography>
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
             New User
@@ -179,39 +187,62 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const selectedUser = selected.indexOf(name) !== -1;
+                    // const {host_id, host_fname, host_lname, Username } = row;
+                    // const selectedUser = selected.indexOf(FName + Lname) !== -1;
 
                     return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, name)} />
-                        </TableCell>
+                      
+                      <TableRow hover key={row.host_id} tabIndex={-1} role="checkbox" >
+                        {console.log(row.host_id)}
+                            
+                          <TableCell align='left'>
+                                {row.host_fname}
+                          </TableCell>
+  
+                          <TableCell align="left">{row.host_lname}</TableCell>
+  
+                          <TableCell align="left">{row.Username}</TableCell>
+  
+                          <TableCell align="left">
+                            <Label color={(row.Status === 'banned' && 'error') || 'success'}>{row.Status}</Label>
+                          </TableCell>
+  
+                          <TableCell align="right">  
+                            <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                              <Iconify icon={'eva:more-vertical-fill'} />
+                            </IconButton>
+                           </TableCell>
+                           <TableCell>
+                           <Popover
+                                  open={Boolean(open)}
+                                  anchorEl={open}
+                                  onClose={handleCloseMenu}
+                                  anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                  PaperProps={{
+                                    sx: {
+                                      p: 1,
+                                      width: 140,
+                                      '& .MuiMenuItem-root': {
+                                        px: 1,
+                                        typography: 'body2',
+                                        borderRadius: 0.75,
+                                      },
+                                    },
+                                  }}
+                                >
+                              <MenuItem>
+                                <Rlink to={`/Edit/${row.host_id}`}><Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} /></Rlink>
+                                Edit
+                              </MenuItem>
+                              
 
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-
-                        <TableCell align="left">{company}</TableCell>
-
-                        <TableCell align="left">{role}</TableCell>
-
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-                        <TableCell align="left">
-                          <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
-                        </TableCell>
-
-                        <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
-                          </IconButton>
-                        </TableCell>
+                              <MenuItem sx={{ color: 'error.main' }}>
+                                <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                                Delete
+                              </MenuItem>
+                            </Popover>
+                           </TableCell>
                       </TableRow>
                     );
                   })}
@@ -261,34 +292,7 @@ export default function UserPage() {
         </Card>
       </Container>
 
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
+      
     </>
   );
 }
