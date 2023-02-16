@@ -1,4 +1,3 @@
-import { filter } from 'lodash';
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from "react-router-dom";
@@ -9,21 +8,11 @@ import IconButton from '@mui/material/IconButton';
 
 // material
 import {
-  Menu, 
-  MenuItem, 
-  ListItemIcon, 
-  ListItemText,
   Card,
-  Table,
   Stack,
   Button,
-  TableRow,
-  TableBody,
-  TableCell,
   Container,
   Typography,
-  TableContainer,
-  TablePagination,
   Grid,
   TextField,
   Box
@@ -31,19 +20,11 @@ import {
 
 // components
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import Page from '../../components/Page';
-import Label from '../../components/label';
-import Scrollbar from '../../components/Scrollbar';
-import Iconify from '../../components/iconify';
 import CardContent from '@mui/material/CardContent';
-import AddMatch from './AddMatch';
-import PlayerInMatch from './PlayerInMatch';
-import TeamInMatch from './TeamInMatch';
-import PlayerRegGen from './PlayerRegGen';
-import TeamRegGen from './TeamRegGen';
-
 // import requestPost from '../serviceWorker';
 // mock
 // import USERLIST from '../_mock/user';
@@ -59,6 +40,41 @@ import TeamRegGen from './TeamRegGen';
 
 
 
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+
+  const validSchema = Yup.object().shape({
+
+    totalbidtime: Yup.string().required('bid time is required'),    
+    baseamt: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Base Amount is required'),
+    lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
+    Mobnum: Yup.string().matches(phoneRegExp, 'Not a valid Phone Number').max(10).required('Mobile is required'),
+    password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
+    selectpos: Yup.string().required("Position Should be selected!"),
+    
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      totalbidtime: '',
+      baseamt:  '',
+      lname:  '',
+      Mobnum:  '',
+      username: '',
+      password:  '',
+      selectpos:'',
+    },
+    validationSchema: validSchema,
+    onSubmit: (values, actions) => {
+      
+    }
+  });
+  
+  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
+
+
+  const [value, setValue] = useState(dayjs('2018-01-01T00:00:00.000Z'));
+
 
 
 
@@ -71,26 +87,26 @@ export default function BidSetup() {
   const [USERLIST,setUserList] = useState();
       
 
-      const display = () => {
-        axios.post("http://localhost:3001/bidStatus",{
-          id:location.state.mid,
-        }).then((res) => {
-       if(res.data){
-          console.log(res.data[0][0]);
-          setUserList(res.data[0][0].bidStatus);
-       }
-       else{
-        setUserList([]);
-       }
-        }).catch((error) => {
-          console.log(error);
-            console.log('No internet connection found. App is running in offline mode.');
-          });
-      }
+  //     const display = () => {
+  //       axios.post("http://localhost:3001/bidStatus",{
+  //         id:location.state.mid,
+  //       }).then((res) => {
+  //      if(res.data){
+  //         console.log(res.data[0][0]);
+  //         setUserList(res.data[0][0].bidStatus);
+  //      }
+  //      else{
+  //       setUserList([]);
+  //      }
+  //       }).catch((error) => {
+  //         console.log(error);
+  //           console.log('No internet connection found. App is running in offline mode.');
+  //         });
+  //     }
       
-  useEffect(() => {
+  // useEffect(() => {
    
-  }, [])
+  // }, [])
   
   const [open, setOpen] = useState(true);
 
@@ -122,40 +138,7 @@ export default function BidSetup() {
       </Box>
       </>);
   }
-  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-
-
-  const validSchema = Yup.object().shape({
-
-    username: Yup.string().email('Not a valid Email!').required('Email is required'),    
-    fname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('First Name is required'),
-    lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
-    Mobnum: Yup.string().matches(phoneRegExp, 'Not a valid Phone Number').max(10).required('Mobile is required'),
-    password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
-    selectpos: Yup.string().required("Position Should be selected!"),
-    
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      username: '',
-      fname:  '',
-      lname:  '',
-      Mobnum:  '',
-      username: '',
-      password:  '',
-      selectpos:'',
-    },
-    validationSchema: validSchema,
-    onSubmit: (values, actions) => {
-      
-    }
-  });
   
-  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
-
-
-
   return (
     <Page title="Matches">
       <Container maxWidth="xl">
@@ -172,19 +155,36 @@ export default function BidSetup() {
         </Stack>
         <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
 
+        <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
+            Start Auction
+          </Button>
+
+        <Grid sx={{ display: 'flex',justifyContent:'center'}} >
         <Stack spacing={3}>
         <TextField 
-        name="email"  
-        label="Email address" 
-        {...getFieldProps('username')}
-        helperText={touched.username && errors.username}
-        error={Boolean(touched.username && errors.username)}
+        sx={{ width: '25ch' }}
+        name="time"  
+        label="Total Bid time" 
+        {...getFieldProps('totalbidtime')}
+        helperText={touched.totalbidtime && errors.totalbidtime}
+        error={Boolean(touched.totalbidtime && errors.totalbidtime)}
         
         />
-        <TextField name="Fname" label="First Name" 
-        {...getFieldProps('fname')}
-        helperText={touched.fname && errors.fname}
-        error={Boolean(touched.fname && errors.fname)}
+        {/* <DesktopTimePicker
+          label="For desktop"
+          value={value}
+          onChange={(newValue) => {
+            setValue(newValue);
+          }}
+          renderInput={(params) => <TextField {...params} />}
+        /> */}
+
+        <TextField 
+        type="number"
+        name="baseamount" label="Base Amount of Players" 
+        {...getFieldProps('baseamt')}
+        helperText={touched.baseamt && errors.baseamt }
+        error={Boolean(touched.baseamt && errors.baseamt)}
         />
         <TextField name="Lname" label="Last Name" 
         {...getFieldProps('lname')}
@@ -199,15 +199,7 @@ export default function BidSetup() {
          error={Boolean(touched.username && errors.Mobnum)}
          />
          </Stack>
-
-        <Grid container spacing={3}>
-          
          </Grid>
-
-        
-          
-        
-          
 
         <Grid sx={{ display: 'flex',justifyContent:'center'}}>
           <Card sx={{ display: 'flex',marginTop:'100px',justifyContent:'center',width:'400px' }}>
