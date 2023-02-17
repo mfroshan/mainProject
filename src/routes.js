@@ -2,6 +2,7 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 
 import DashboardLayout from './layouts/dashboard';
+import AuctionLayout from './layouts/auction';
 import SimpleLayout from './layouts/simple';
 //
 import BlogPage from './pages/BlogPage';
@@ -20,6 +21,7 @@ import Profile from './pages/user/Profile';
 import MatchDetails from './pages/Match/MatchDetails';
 import TeamRegister from './pages/TeamRegister';
 import BidSetup from './pages/Match/BidSetup';
+import PlayerProfile from './pages/auction/PlayerProfile';
 
 // ----------------------------------------------------------------------
 
@@ -50,6 +52,15 @@ export default function Router() {
         { path: 'bidsetup', element: <BidSetup />},
         { path: 'position', element: <ManagePosition />},
         { path: 'profile', element: <Profile />},        
+        { path: '*', element: <Navigate to="/404" />}
+      ],
+    },
+    {
+      path: '/auction',
+      element: <AuctionLayout />,
+      children: [
+        { element: <Navigate to="/auction/home" />, index: true },
+        { path: 'profile', element: <PlayerProfile/>},        
         { path: '*', element: <Navigate to="/404" />}
       ],
     },

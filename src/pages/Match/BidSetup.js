@@ -25,6 +25,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import Page from '../../components/Page';
 import CardContent from '@mui/material/CardContent';
+import Iconify from 'src/components/iconify/Iconify';
 // import requestPost from '../serviceWorker';
 // mock
 // import USERLIST from '../_mock/user';
@@ -38,42 +39,6 @@ import CardContent from '@mui/material/CardContent';
 // ----------------------------------------------------------------------
 
 
-
-
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-
-
-  const validSchema = Yup.object().shape({
-
-    totalbidtime: Yup.string().required('bid time is required'),    
-    baseamt: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Base Amount is required'),
-    lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
-    Mobnum: Yup.string().matches(phoneRegExp, 'Not a valid Phone Number').max(10).required('Mobile is required'),
-    password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
-    selectpos: Yup.string().required("Position Should be selected!"),
-    
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      totalbidtime: '',
-      baseamt:  '',
-      lname:  '',
-      Mobnum:  '',
-      username: '',
-      password:  '',
-      selectpos:'',
-    },
-    validationSchema: validSchema,
-    onSubmit: (values, actions) => {
-      
-    }
-  });
-  
-  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
-
-
-  const [value, setValue] = useState(dayjs('2018-01-01T00:00:00.000Z'));
 
 
 
@@ -110,7 +75,43 @@ export default function BidSetup() {
   
   const [open, setOpen] = useState(true);
 
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+
+  const validSchema = Yup.object().shape({
+
+    totalbidtime: Yup.string().required('bid time is required'),    
+    baseamt: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Base Amount is required'),
+    lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
+    Mobnum: Yup.string().matches(phoneRegExp, 'Not a valid Phone Number').max(10).required('Mobile is required'),
+    password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
+    selectpos: Yup.string().required("Position Should be selected!"),
+    
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      totalbidtime: '',
+      baseamt:  '',
+      lname:  '',
+      Mobnum:  '',
+      username: '',
+      password:  '',
+      selectpos:'',
+    },
+    validationSchema: validSchema,
+    onSubmit: (values, actions) => {
+      
+    }
+  });
   
+  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
+
+
+  const [value, setValue] = useState(dayjs('2018-01-01T00:00:00.000Z'));
+
+
+
 
   const [addDialog, setDialog] = useState();
 
@@ -155,7 +156,9 @@ export default function BidSetup() {
         </Stack>
         <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
 
-        <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button variant="contained" component={RouterLink} to="#" onClick={()=>{
+          
+        }} startIcon={<Iconify icon="eva:plus-fill" />}>
             Start Auction
           </Button>
 
