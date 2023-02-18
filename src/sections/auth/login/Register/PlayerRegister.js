@@ -107,7 +107,6 @@ export default function PlayerRegister() {
       fname:  '',
       lname:  '',
       Mobnum:  '',
-      username: '',
       password:  '',
       selectpos:'',
     },
@@ -186,11 +185,12 @@ const convertBase64 =  (filename) =>{
 
 const getPosition = () => { 
   Axios.post("http://localhost:3001/getPos",{
+    mid:id,
   }).then((response) =>{
     console.log(response.data);
     if(response.data.length > 0 ){        
-        console.log(response.data)
-        setPosData(response.data)        
+        console.log(response.data[0])
+        setPosData(response.data[0])        
     }
     else{
       console.log("No data!");

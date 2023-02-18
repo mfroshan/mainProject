@@ -1,7 +1,7 @@
 import { filter } from 'lodash';
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 
 
@@ -32,6 +32,7 @@ import Scrollbar from '../../components/Scrollbar';
 import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import AddPosition from './AddPosition';
 // import requestPost from '../serviceWorker';
 // mock
@@ -89,16 +90,17 @@ export default function ManagePosition() {
   };
   const [USERLIST,setUserList] = useState([]);
   
-
+  const location = useLocation();
     
-     
+     const mid  = localStorage.getItem("MatchID"); 
       const display = () => {
         axios.post("http://localhost:3001/getPos",{
+          mid:mid
         }).then((res) => {
        console.log(res);
           if(res.data){
           console.log(res);
-          setUserList(res.data);
+          setUserList(res.data[0]);
        }
        else{
         setUserList([]);
@@ -246,7 +248,7 @@ export default function ManagePosition() {
             New Position
           </Button>
         </Stack>
-
+        <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
@@ -266,7 +268,7 @@ export default function ManagePosition() {
                     const { pos_id,	pos_name} = row;  
                         
                     return (
-                      <TableRow>                      
+                      <TableRow key={pos_id}>                      
                         
                         <TableCell align='left'>
                               

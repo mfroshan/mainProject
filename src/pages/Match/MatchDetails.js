@@ -128,11 +128,7 @@ export default function MatchDetails() {
   const location = useLocation();
   console.log(location.state.mid);
 
-  
-
-
- 
-
+  localStorage.setItem("MatchID",location.state.mid);
  
   const StatusMenu = (props)=>{
   console.log(props)
@@ -160,8 +156,6 @@ export default function MatchDetails() {
       </>);
   }
 
-
-
   return (
     <Page title="Matches">
       <Container maxWidth="xl">
@@ -171,9 +165,16 @@ export default function MatchDetails() {
           <Typography variant="h4" gutterBottom>
             Match Details
           </Typography>
-          {/* <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Match
-          </Button> */}
+          <Button variant="contained"  onClick={()=>{
+            navigate('/dashboard/position',{
+              state:{
+              mid:location.state.mid
+              }
+            })
+            console.log("clicked!");
+          }} startIcon={<Iconify icon="eva:plus-fill" />}>
+            Manages Positon
+          </Button> 
           
         </Stack>
         <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />

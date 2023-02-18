@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from "react-router-dom";
 import { Link as RouterLink, Navigate, useNavigate } from 'react-router-dom';
@@ -20,11 +21,16 @@ import {
 
 // components
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { ProductSort, ProductList, ProductCartWidget, ProductFilterSidebar } from '../../sections/@dashboard/products';
+
 import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import Page from '../../components/Page';
 import CardContent from '@mui/material/CardContent';
+import Iconify from 'src/components/iconify/Iconify';
+import PRODUCTS from '../../_mock/products';
+
 // import requestPost from '../serviceWorker';
 // mock
 // import USERLIST from '../_mock/user';
@@ -40,42 +46,6 @@ import CardContent from '@mui/material/CardContent';
 
 
 
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-
-
-  const validSchema = Yup.object().shape({
-
-    totalbidtime: Yup.string().required('bid time is required'),    
-    baseamt: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Base Amount is required'),
-    lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
-    Mobnum: Yup.string().matches(phoneRegExp, 'Not a valid Phone Number').max(10).required('Mobile is required'),
-    password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
-    selectpos: Yup.string().required("Position Should be selected!"),
-    
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      totalbidtime: '',
-      baseamt:  '',
-      lname:  '',
-      Mobnum:  '',
-      username: '',
-      password:  '',
-      selectpos:'',
-    },
-    validationSchema: validSchema,
-    onSubmit: (values, actions) => {
-      
-    }
-  });
-  
-  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
-
-
-  const [value, setValue] = useState(dayjs('2018-01-01T00:00:00.000Z'));
-
-
 
 
 export default function BidSetup() {
@@ -86,6 +56,15 @@ export default function BidSetup() {
 
   const [USERLIST,setUserList] = useState();
       
+  const [openFilter, setOpenFilter] = useState(false);
+
+  const handleOpenFilter = () => {
+    setOpenFilter(true);
+  };
+
+  const handleCloseFilter = () => {
+    setOpenFilter(false);
+  };
 
   //     const display = () => {
   //       axios.post("http://localhost:3001/bidStatus",{
@@ -119,6 +98,43 @@ export default function BidSetup() {
   console.log(location.state.mid);
 
  
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+
+const validSchema = Yup.object().shape({
+
+  totalbidtime: Yup.string().required('bid time is required'),    
+  baseamt: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Base Amount is required'),
+  lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
+  Mobnum: Yup.string().matches(phoneRegExp, 'Not a valid Phone Number').max(10).required('Mobile is required'),
+  password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
+  selectpos: Yup.string().required("Position Should be selected!"),
+  
+});
+
+const formik = useFormik({
+  initialValues: {
+    totalbidtime: '',
+    baseamt:  '',
+    lname:  '',
+    Mobnum:  '',
+    username: '',
+    password:  '',
+    selectpos:'',
+  },
+  validationSchema: validSchema,
+  onSubmit: (values, actions) => {
+    
+  }
+});
+
+const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
+
+
+const [value, setValue] = useState(dayjs('2018-01-01T00:00:00.000Z'));
+
+
+
   const StatusMenu = (props)=>{
   console.log(props)
     return(
@@ -140,74 +156,30 @@ export default function BidSetup() {
   }
   
   return (
-    <Page title="Matches">
-      <Container maxWidth="xl">
-      {addDialog}
-      
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h4" gutterBottom>
-            Bid Details
-          </Typography>
-          {/* <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Match
-          </Button> */}
-          
+    <>
+    <Helmet>
+      <title> Auction Details </title>
+    </Helmet>
+
+    <Container>
+      <Typography variant="h4" sx={{ mb: 5 }}>
+       Players
+      </Typography>
+
+      <Stack direction="row" flexWrap="wrap-reverse" alignItems="center" justifyContent="flex-end" sx={{ mb: 5 }}>
+        <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
+          <ProductFilterSidebar
+            openFilter={openFilter}
+            onOpenFilter={handleOpenFilter}
+            onCloseFilter={handleCloseFilter}
+          />
+          <ProductSort />
         </Stack>
-        <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
+      </Stack>
 
-        <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
-            Start Auction
-          </Button>
-
-        <Grid sx={{ display: 'flex',justifyContent:'center'}} >
-        <Stack spacing={3}>
-        <TextField 
-        sx={{ width: '25ch' }}
-        name="time"  
-        label="Total Bid time" 
-        {...getFieldProps('totalbidtime')}
-        helperText={touched.totalbidtime && errors.totalbidtime}
-        error={Boolean(touched.totalbidtime && errors.totalbidtime)}
-        
-        />
-        {/* <DesktopTimePicker
-          label="For desktop"
-          value={value}
-          onChange={(newValue) => {
-            setValue(newValue);
-          }}
-          renderInput={(params) => <TextField {...params} />}
-        /> */}
-
-        <TextField 
-        type="number"
-        name="baseamount" label="Base Amount of Players" 
-        {...getFieldProps('baseamt')}
-        helperText={touched.baseamt && errors.baseamt }
-        error={Boolean(touched.baseamt && errors.baseamt)}
-        />
-        <TextField name="Lname" label="Last Name" 
-        {...getFieldProps('lname')}
-        helperText={touched.lname && errors.lname}
-        error={Boolean(touched.lname && errors.lname)}
-         />
-         <TextField type="number" name="PhoneNo" label="Phone Number" 
-         required
-         inputProps={{  maxLength:10  }}
-         {...getFieldProps('Mobnum')}
-         helperText={touched.Mobnum && errors.Mobnum}
-         error={Boolean(touched.username && errors.Mobnum)}
-         />
-         </Stack>
-         </Grid>
-
-        <Grid sx={{ display: 'flex',justifyContent:'center'}}>
-          <Card sx={{ display: 'flex',marginTop:'100px',justifyContent:'center',width:'400px' }}>
-            <StatusMenu status={USERLIST} />
-            </Card>
-        </Grid>
-
-      </Container>
-    </Page>
+      <ProductList products={PRODUCTS} />
+      <ProductCartWidget />
+    </Container>
+  </>
   );
 }

@@ -16,6 +16,7 @@ import Select from '@mui/material/Select';
 import { reject } from 'lodash';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Avatar from '@mui/material/Avatar';
+import MatchDetails from '../Match/MatchDetails';
 
 
 
@@ -44,10 +45,11 @@ export default function AddPlayer(details) {
   const validSchema = Yup.object().shape({
     fname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('First Name is required'),
     lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
-    Mobnum: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Mobile is required'),
+    Mobnum: Yup.string().matches(/^\S/, 'Whitespace is not allowed').max(10).required('Mobile is required'),
     username: Yup.string().matches(/^\S/, 'Whitespace is not allowed').email("Not a valid Email!").required('Username is required'),
     password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
-    
+    selectpos : Yup.string().required('select position'),
+    selectmatch : Yup.string().required('select match'),
   });
 
 
@@ -75,7 +77,7 @@ export default function AddPlayer(details) {
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
   
-
+console.log(formik);
   const handleFileUpload =  async (e) => {
     const filename = e.target.files[0];
   
@@ -178,8 +180,7 @@ const UpdatePlayer = () => {
       console.log(response.data[0][0]);
       if(response.data[0][0].status === 0){        
           // navigate('/',{replace:true});
-      }
-      else{
+      }else{
         console.log(response.data[0][0].msg)
         // showToastMsgFail();
       }
@@ -200,12 +201,15 @@ const UpdatePlayer = () => {
 
   
   const getPosition = () => { 
+    let matchid = localStorage.getItem("MatchID"); 
+    console.log("getPositon Matchid:"+matchid)
     Axios.post("http://localhost:3001/getPos",{
+      mid: values.selectmatch,
     }).then((response) =>{
       console.log(response.data);
       if(response.data.length > 0 ){        
-          console.log(response.data)
-          setPosData(response.data)        
+          console.log("position details:"+response.data[0])
+          setPosData(response.data[0])        
       }
       else{
         console.log("No data!");
@@ -233,7 +237,6 @@ const UpdatePlayer = () => {
 
   useEffect(() => {
     
-    getPosition();
     getMatch();
     
   },[])
@@ -242,6 +245,9 @@ const UpdatePlayer = () => {
   const handleShowPassword = () => {
     setShowPassword((show) => !show);
   };
+
+  
+  
 
   
   const onclose = () => {
@@ -367,6 +373,7 @@ const UpdatePlayer = () => {
           {...getFieldProps('selectmatch')}
           error = {Boolean(touched.selectmatch &&  errors.selectmatch)}
           helperText = {touched.selectmatch && errors.selectmatch}
+          onBlur = {getPosition}
         >
           
           { MacthDetails.map( (data) => {
@@ -391,6 +398,7 @@ const UpdatePlayer = () => {
           {...getFieldProps('selectpos')}
           error = {Boolean(touched.selectpos &&  errors.selectpos)}
           helperText = {touched.selectpos && errors.selectpos}
+          
         >
           
           { posData.map( (data) => {

@@ -159,14 +159,14 @@ const conn = mysql.createConnection({
 
     app.post('/getPos',(req,res)=>{
 
-        conn.query("select * from tbl_position",
+        const mid = req.body.mid;
+        conn.query("call getPos(?)",
+        [mid],
         (err,result) => {
 
                 if(err){
-                    conosle.log(err);
-                }
-
-                if(result.length > 0 ) {
+                    console.log(err);
+                }else if(result.length > 0 ) {
                     console.log(result);
                     res.send(result);
                 }else{
@@ -512,8 +512,9 @@ const conn = mysql.createConnection({
 
         
         const Posname = req.body.pos_value;
-        conn.query("call insertPos(?)",
-        [Posname],
+        const matchid = req.body.mid
+        conn.query("call insertPos(?,?)",
+        [Posname,matchid],
             (err,result) => {
                 if(err){ 
                     console.log(err);

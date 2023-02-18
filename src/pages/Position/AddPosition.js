@@ -9,7 +9,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { Stack, Container, Typography, TextField} from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Navigate } from 'react-router-dom';
+
 
 
 export default function AddPosition(details) {
@@ -60,16 +60,18 @@ export default function AddPosition(details) {
     }
 
     const InsertCall = () =>{
-      console.log(values.pos_name);      
+      console.log(values.pos_name);  
+      let mid = localStorage.getItem("MatchID");    
       axios.post("http://localhost:3001/InsertPos",{
         pos_value: values.pos_name,
+        mid: mid,
       }).then((res) => {
-          if (res.data[0][0].errorCode === "Inserted!") {
+          if (res.data[0][0].msg === "Inserted!") {
             setAlert();
             console.log(res.data);
           } else {
             console.log(res.data);
-            alert(res.data[0][0].errorMsg);
+            alert(res.data[0][0].msg);
           }
         }).catch(() => {
           console.log('No internet connection found. App is running in offline mode.');
