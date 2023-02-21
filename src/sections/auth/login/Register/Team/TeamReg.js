@@ -94,7 +94,7 @@ export default function TeamReg() {
     username: Yup.string().email('Not a valid Email!').required('Email is required'),    
     fname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('First Name is required'),
     lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
-    Mobnum: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Mobile is required'),
+    Mobnum: Yup.string().matches(/^\S/, 'Whitespace is not allowed').max(10).required('Mobile is required'),
     password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
     
   });
@@ -253,7 +253,9 @@ useEffect(() => {
          helperText={touched.lname && errors.lname}
          error={Boolean(touched.lname && errors.lname)}
          />
-         <TextField name="PhoneNo" label="Phone Number" 
+         <TextField 
+         type="number"
+         name="PhoneNo" label="Phone Number" 
         {...getFieldProps('Mobnum')}
         helperText={touched.Mobnum && errors.Mobnum}
         error={Boolean(touched.username && errors.Mobnum)}

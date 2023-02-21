@@ -2,11 +2,14 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 
 import DashboardLayout from './layouts/dashboard';
+import AuctionLayout from './layouts/auction';
+import UserLayout from './userLayout/UserLayout';
 import SimpleLayout from './layouts/simple';
 //
 import BlogPage from './pages/BlogPage';
 import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
+import User404 from './userLayout/User404';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
@@ -20,6 +23,7 @@ import Profile from './pages/user/Profile';
 import MatchDetails from './pages/Match/MatchDetails';
 import TeamRegister from './pages/TeamRegister';
 import BidSetup from './pages/Match/BidSetup';
+import PlayerProfile from './pages/auction/PlayerProfile';
 
 // ----------------------------------------------------------------------
 
@@ -54,6 +58,24 @@ export default function Router() {
       ],
     },
     {
+      path: '/auction',
+      element: <AuctionLayout />,
+      children: [
+        { element: <Navigate to="/auction/home" />, index: true },
+        { path: 'profile', element: <PlayerProfile/>},        
+        { path: '*', element: <Navigate to="/404" />}
+      ],
+    },
+    {
+      path: '/user',
+      element: <UserLayout />,
+      children: [
+        { element: <Navigate to="/user/profile" />, index: true },
+        { path: 'profile', element: <Profile />},          
+        { path: '*', element: <Navigate to="/User404" />}
+      ],
+    },
+    {
       path: '/login',
       element: <LoginPage />,
     },
@@ -74,6 +96,7 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: '404', element: <Page404 /> },
+        { path: '/User404', element: <User404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],
     },

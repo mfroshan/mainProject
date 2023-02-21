@@ -43,7 +43,7 @@ export default function AddTeam(details) {
     fname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('First Name is required'),
     lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
     Mobnum: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Mobile is required'),
-    username: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Username is required'),
+    username: Yup.string().email('Not a valid Email!').required('Email is required'), 
     password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
     
   });

@@ -1,7 +1,7 @@
 
 // component
 
-import SvgColor from '../../../components/svg-color';
+import SvgColor from '../../components/svg-color';
 
 // ----------------------------------------------------------------------
 
@@ -107,13 +107,13 @@ if(role === "Admin"){
  }else if(role==="Player"){
   navConfig.push({
     title: 'Profile',
-    path: '/profile',
+    path: '/dashboard/profile',
     icon: icon('ic_user'),
   });
  }else if(role==="Team"){
   navConfig.push({
     title: 'Profile',
-    path: '/profile',
+    path: '/dashboard/profile',
     icon: icon('ic_user'),
   });
  }

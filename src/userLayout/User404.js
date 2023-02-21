@@ -18,11 +18,11 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function Page404() {
+export default function User404() {
   return (
     <>
       <Helmet>
-        <title> 404 Page Not Found </title>
+        <title> 404 Page  </title>
       </Helmet>
 
       <Container>
@@ -42,7 +42,7 @@ export default function Page404() {
             sx={{ height: 260, mx: 'auto', my: { xs: 5, sm: 10 } }}
           />
 
-          <Button to="/dashboard" size="large" variant="contained" component={RouterLink}>
+          <Button to="/user" size="large" variant="contained" component={RouterLink}>
             Go to Home
           </Button>
         </StyledContent>

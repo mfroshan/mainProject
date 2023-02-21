@@ -56,11 +56,27 @@ export default function LoginForm() {
     }).then((response) =>{
       console.log(response.data[0][0]);
       if(response.data[0][0].status === 1){
+        if(response.data[1][0].Type==="Host"){
           navigate('/dashboard/app');
           localStorage.setItem("User_Name",response.data[0][0].Username);
           console.log(response.data[1][0].Type)
           localStorage.setItem("Role",response.data[1][0].Type)
           localStorage.setItem("HostID",response.data[2][0].id)
+        }else if(response.data[1][0].Type==="Player"){
+          navigate('/user/profile');
+          localStorage.setItem("User_Name",response.data[0][0].Username);
+          localStorage.setItem("Role",response.data[1][0].Type)
+          localStorage.setItem("PlayerID",response.data[2][0].id)
+        }else if(response.data[1][0].Type==="Team"){
+          navigate('/user/profile');
+          localStorage.setItem("User_Name",response.data[0][0].Username);
+          localStorage.setItem("Role",response.data[1][0].Type)
+          localStorage.setItem("TeamID",response.data[2][0].id)
+        }else if(response.data[1][0].Type==="Admin"){
+          navigate('/dashboard/app');
+          localStorage.setItem("User_Name",response.data[0][0].Username);
+          localStorage.setItem("Role",response.data[1][0].Type)
+        }
       }
       else{
         showToastMsgFail();

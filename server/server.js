@@ -145,8 +145,28 @@ const conn = mysql.createConnection({
                 if(err){
                     conosle.log(err);
                 }
+                else if(result.length > 0 ) {
+                    console.log(result);
+                    res.send(result);
+                }else{
+                    console.log("No data");
+                }
+        });
+    });
 
-                if(result.length > 0 ) {
+    // update image
+
+    app.post('/UpdateImage',(req,res)=>{
+        const role = req.body.role;
+        const username = req.body.username;
+        const imageValue = req.body.imageValue;
+        conn.query("call UpdateImage(?,?,?)",
+        [role,username,imageValue],
+        (err,result) => {
+
+                if(err){
+                    conosle.log(err);
+                }else if(result.length > 0 ) {
                     console.log(result);
                     res.send(result);
                 }else{
@@ -156,7 +176,7 @@ const conn = mysql.createConnection({
     });
 
     
-
+//get postion detaails
     app.post('/getPos',(req,res)=>{
 
         const mid = req.body.mid;
@@ -175,6 +195,8 @@ const conn = mysql.createConnection({
         });
     });
 
+
+    // check username 
     app.post('/checkEmail',(req,res)=>{
 
         const email = req.body.email;
@@ -297,7 +319,7 @@ const conn = mysql.createConnection({
                     if(err){ 
                         console.log(err);
                     }
-                    if(result.length > 0){
+                    else if(result.length > 0){
                         console.log(result);
                         res.send(result);
                         // res.send({message:0}); 
@@ -307,6 +329,36 @@ const conn = mysql.createConnection({
                     }
             });
     });
+
+    // profile update
+
+    app.post('/ProfileUpdate', (req,res) => {
+
+        const role = req.body.role;
+        const oldusername = req.body.oldusername;
+        const email = req.body.email;
+        const fname = req.body.fname;
+        const lname = req.body.lname;
+        const Number = req.body.Number;
+    
+        conn.query("call UpdateUserProfile(?,?,?,?,?,?)",
+            [oldusername,email,fname,lname,Number,role],
+                (err,result) => {
+                    //res.send(result)
+                    if(err){ 
+                        console.log(err);
+                    }
+                    else if(result.length > 0){
+                        console.log(result);
+                        res.send(result);
+                        // res.send({message:0}); 
+                    }else{
+                        console.log("Account Already Exist");
+                        res.send({message:'Account Already Exist!'});
+                    }
+            });
+    });
+    
 
 
     // Team update
@@ -373,6 +425,52 @@ const conn = mysql.createConnection({
             }
         });
 
+    });
+
+    // player in auction display
+
+    app.post('/playerp' , (req,res) => {
+        const mid = req.body.mid;
+        const pos_id = req.body.pos_id;
+        conn.query("call playerDisplayAuction(?,?)",
+        [mid,pos_id],
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+                if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No user found!");
+                    res.send({message:'User Not Found!'});
+                }
+        });
+    });
+
+    // get Player count 
+    app.post('/getCount' , (req,res) => {
+        
+        const mid = req.body.mid;
+
+        conn.query("call playerCount(?)",
+        [mid],
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+                if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No user found!");
+                    res.send({message:'User Not Found!'});
+                }
+        });
     });
 
     //match display
@@ -572,6 +670,30 @@ const conn = mysql.createConnection({
                 }else{
                     console.log("position Not Found!");
                     res.send({message:'position Not Found!'});
+                }
+        });
+    });
+
+    // profile Display
+
+    app.post('/getProflileDetails' , (req,res) => {
+        
+        const role = req.body.role;
+        const username= req.body.username;
+        conn.query("call GetProfileDetails(?,?)",
+        [role,username],
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+                if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("Something went Wrong!");
+                    res.send({message:'Something went Wrong!'});
                 }
         });
     });
