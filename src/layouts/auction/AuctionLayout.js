@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-//
 
+//
+import ChatComponent from 'src/components/chat/ChatComponent';
 // ----------------------------------------------------------------------
 
 const APP_BAR_MOBILE = 64;
@@ -36,7 +37,8 @@ export default function AuctionLayout() {
     <StyledRoot>
       <Main>
         <Outlet />
-      </Main>
+      </Main> 
+      <ChatComponent/>
     </StyledRoot>
   );
 }
