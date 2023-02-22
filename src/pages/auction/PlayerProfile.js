@@ -7,6 +7,7 @@ import { useLocation,useNavigate } from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import Axios from 'axios';
 
 
 
@@ -69,14 +70,30 @@ export default function  PlayerProfile () {
         },
         validationSchema: validSchema,
         onSubmit: (values, actions) => {
-          
+            addAuction();
         }
       });
       const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
-    //   const { username,player_fname,Player_lname,Player_no,player_img,pos_name} = player;
+      const { player_id ,username,player_fname,Player_lname,Player_no,player_img,pos_name} = player;
+
       const addAuction = () => {
-            
+
+            let matchid = localStorage.getItem('MatchID');
+            let posid = localStorage.getItem('pos_id');
+
+            Axios.post("http://localhost:3001/addPlayerToAuction",{
+                matchid: matchid,
+                posid: posid,
+                baseamt: values.bidamt, 
+                playerid: player_id,
+          }).then((res) => {
+            console.log(res.data[0][0])
+            if (res.data[0][0].status === 1) {
+                navigate(-1);
+            }
+          })
+       
       }
 
 

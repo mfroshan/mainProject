@@ -24,6 +24,11 @@ import MatchDetails from './pages/Match/MatchDetails';
 import TeamRegister from './pages/TeamRegister';
 import BidSetup from './pages/Match/BidSetup';
 import PlayerProfile from './pages/auction/PlayerProfile';
+import TeamBidView from './pages/auction/TeamBidView';
+import HomeLayout from './HomePage/HomeLayout';
+import Home from './HomePage/Home';
+import Home404 from './HomePage/Home404';
+
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +37,14 @@ export default function Router() {
   const routes = useRoutes([
     {
       path: '/',
+      element: <Home />, 
+      children:[
+        {element: <Navigate to="/index" /> ,index: true},
+        { path: '*', element: <Navigate to="/index404" />}
+      ]
+    },
+    {
+      path: '/login',
       element: <LoginPage />, 
       children:[
         {element: <Navigate to="/login" /> ,index: true},
@@ -71,7 +84,8 @@ export default function Router() {
       element: <UserLayout />,
       children: [
         { element: <Navigate to="/user/profile" />, index: true },
-        { path: 'profile', element: <Profile />},          
+        { path: 'profile', element: <Profile />},
+        { path: 'teambidview', element: <TeamBidView />},          
         { path: '*', element: <Navigate to="/User404" />}
       ],
     },
@@ -92,11 +106,16 @@ export default function Router() {
       element: <TeamRegister />, 
     },
     {
+      path:'/index',
+      element: <Home />
+    },
+    {
       element: <SimpleLayout />,
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: '404', element: <Page404 /> },
         { path: '/User404', element: <User404 /> },
+        { path: '/index404' ,element: <Home404 />},
         { path: '*', element: <Navigate to="/404" /> },
       ],
     },

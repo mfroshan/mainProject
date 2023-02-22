@@ -16,7 +16,7 @@ export const UpdateDetails = (props) => {
 
     const [alertOpen, setAlertOpen] = useState(false);
 
-    const [alertMsg, setAlert] = useState();
+    const [alertMsg, setAlert] = useState(false);
 
     const navigate = useNavigate();
 
@@ -81,15 +81,16 @@ export const UpdateDetails = (props) => {
         let res = await Axios.post("http://localhost:3001/checkEmail",{email: values.username});
         let status = res.data[0][0].status;
       if(email === values.username){
-
+        setAlert(false);
       }else{
         if(status){
+            setAlert(true);
             alert("Account exists");
           }
       }
         
       }
-
+console.log(alertMsg);
   
 
   return (
@@ -123,7 +124,7 @@ export const UpdateDetails = (props) => {
         
 
         </Stack>
-        
+       { alertMsg===false && 
         <LoadingButton
         sx={{float:'right'}}
         size="small" type="submit" variant="contained" 
@@ -133,6 +134,7 @@ export const UpdateDetails = (props) => {
       >
           Save
      </LoadingButton>
+      }
 
      <MuiSnackbar
         open={alertOpen}

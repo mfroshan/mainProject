@@ -4,6 +4,17 @@ const mysql = require("mysql");
 const cors = require("cors");
 
 
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+
+// const http = require('http');
+// const server = http.createServer(app);
+// const { Server } = require("socket.io");
+// const io = new Server(server);
+
+
 const Razorpay = require("razorpay");
 
 razorpay = new Razorpay({
@@ -13,17 +24,15 @@ razorpay = new Razorpay({
 
 const shortid = require("shortid");
 
+// const socketIO = require('socket.io')(http, {
+//     cors: {
+//         origin: "http://localhost:3000"
+//     }
+// });
+// io.on('connection', (socket) => {
 
-
-const app = express();
-
-app.use(express.json());
-app.use(cors());
-
-
-
-
-
+//     console.log(`a user connected with id ${socket.id}`);
+//   });
 
 const conn = mysql.createConnection({
         host: 'localhost',
@@ -359,7 +368,91 @@ const conn = mysql.createConnection({
             });
     });
     
+ 
+    // adding player to auction
 
+    app.post('/addPlayerToAuction', (req,res) => {
+
+     
+        const matchid = req.body.matchid;
+        const posid = req.body.posid;
+        const baseamt = req.body.baseamt;
+        const playerid = req.body.playerid;
+    
+        conn.query("call AddPlayerToAuction(?,?,?,?)",
+            [matchid,posid,baseamt,playerid],
+                (err,result) => {
+                    //res.send(result)
+                    if(err){ 
+                        console.log(err);
+                    }
+                    else if(result.length > 0){
+                        console.log(result);
+                        res.send(result);
+                        // res.send({message:0}); 
+                    }else{
+                        console.log("Account Already Exist");
+                        res.send({message:'Account Already Exist!'});
+                    }
+            });
+    });
+    
+
+    // Display players to team 
+
+    app.post('/auctionDisplay', (req,res) => {
+
+     
+        const username = req.body.username;
+        const role = req.body.role;
+
+        conn.query("call DisplayBid(?,?)",
+            [username,role],
+                (err,result) => {
+                    //res.send(result)
+                    if(err){ 
+                        console.log(err);
+                    }
+                    else if(result.length > 0){
+                        console.log(result);
+                        res.send(result);
+                        // res.send({message:0}); 
+                    }else{
+                        console.log("Account Already Exist");
+                        res.send({message:'Account Already Exist!'});
+                    }
+            });
+    });
+    
+
+    // display other team bid 
+
+    app.post('/auciton', (req,res) => {
+
+        
+        const matchdid = req.body.matchdid;
+        const pid = req.body.pid;
+        // const baseamt = req.body.baseamt;
+        
+        // const value = req.body.value; 
+
+        conn.query("call DisplayAuctionByTeam(?,?)",
+            [matchdid,pid],
+                (err,result) => {
+                    //res.send(result)
+                    if(err){ 
+                        console.log(err);
+                    }
+                    else if(result.length > 0){
+                        console.log(result);
+                        res.send(result);
+                        // res.send({message:0}); 
+                    }else{
+                        console.log("Account Already Exist");
+                        res.send({message:'Account Already Exist!'});
+                    }
+            });
+    });
 
     // Team update
 

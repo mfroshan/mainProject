@@ -3,6 +3,8 @@ import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 
 // @mui
 import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
@@ -33,6 +35,25 @@ export default function LoginForm() {
   // const handleClick = () => {
     
   // };
+  const validSchema = Yup.object().shape({
+    password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('password'),
+    username: Yup.string().email('Not a valid Email!').required('Email is required'), 
+    
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+    },
+    validationSchema: validSchema,
+    onSubmit: (values, actions) => {
+
+        login();
+        
+    }
+  });
+  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
 
 
@@ -46,12 +67,12 @@ export default function LoginForm() {
      
   }
 
-  const login = (e) =>{
-    e.preventDefault();
+  const login = () =>{
+  
     Axios.post("http://localhost:3001/login", {
       
-      username: setname,
-      password: setpassword,
+      username: values.username,
+      password: values.password,
       
     }).then((response) =>{
       console.log(response.data[0][0]);
@@ -93,17 +114,16 @@ export default function LoginForm() {
         error={ false }
         id="outlined-error"
         name="email" 
-        label="Email address"  onChange={ (e) =>{
-                  userUsername(e.target.value);
-              }}/>
+        label="Email address" 
+        {...getFieldProps('username')}
+        helperText={touched.username && errors.username}
+        error={Boolean(touched.username && errors.username)}
+        />
 
         <TextField
           error={ false }
           name="password"
           label="Password"
-          onChange={ (e) =>{
-            UserPassword(e.target.value);
-        }}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -114,6 +134,9 @@ export default function LoginForm() {
               </InputAdornment>
             ),
           }}
+          {...getFieldProps('password')}
+          helperText={touched.password && errors.password}
+          error={Boolean(touched.username && errors.password)}
         />
       </Stack>
 
@@ -124,7 +147,7 @@ export default function LoginForm() {
         </Link> */}
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={login}>
+      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
         Login
       </LoadingButton>
     </>

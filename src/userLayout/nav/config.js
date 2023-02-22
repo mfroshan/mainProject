@@ -107,15 +107,21 @@ if(role === "Admin"){
  }else if(role==="Player"){
   navConfig.push({
     title: 'Profile',
-    path: '/dashboard/profile',
+    path: '/user/profile',
     icon: icon('ic_user'),
   });
  }else if(role==="Team"){
   navConfig.push({
     title: 'Profile',
-    path: '/dashboard/profile',
+    path: '/user/profile',
     icon: icon('ic_user'),
-  });
+  },
+  {
+    title: 'Auction',
+    path: '/user/teambidview',
+    icon: icon('ic_user'),
+  }
+  );
  }
  return navConfig
 }

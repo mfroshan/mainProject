@@ -49,7 +49,7 @@ export default function TeamReg() {
 
   const [setFname ,userFname ] = useState();
   
-  const [setLname, userLname ] = useState();
+  const [alertMsg, setAlertMsg ] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   
@@ -170,7 +170,7 @@ const reg = () =>{
     }).then((response) =>{
       console.log(response.data[0][0]);
       if(response.data[0][0].status === 0){        
-          navigate('/',{replace:true});
+          navigate('/login',{replace:true});
       }
       else{
         console.log(response.data[0][0].msg)
@@ -203,10 +203,10 @@ const checkEmail = async () => {
   let status = res.data[0][0].status;
 
   if(status){
-    userUsername("");
+    setAlertMsg(true);
     alert("Account exists");
   } else {
-
+    setAlertMsg(false);
   }
 }
 
@@ -310,13 +310,15 @@ useEffect(() => {
         </Link> */}
       </Stack>
       {/* onClick={registerPlayer} */}
-
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" 
+  
+     { 
+     alertMsg === false &&
+     <LoadingButton fullWidth size="large" type="submit" variant="contained" 
       onClick={handleSubmit}
       >
           Register
      </LoadingButton>
-      
+     }
     </>
   );
 }

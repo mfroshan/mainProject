@@ -53,7 +53,9 @@ export default function PlayerRegister() {
   
   const [position, setPosition] = useState();
 
-  const [error, setError] = useState();
+  const [error, setError] = useState(false);
+  
+
 
   const [amt , setAmt] = useState();
 
@@ -172,7 +174,7 @@ const convertBase64 =  (filename) =>{
     }).then((response) =>{
       console.log(response.data[0][0]);
       if(response.data[0][0].status === 0){        
-          navigate('/',{replace:true});
+          navigate('/login',{replace:true});
       }
       else{
         console.log(response.data[0][0].msg)
@@ -204,10 +206,10 @@ const checkEmail = async () => {
   let status = res.data[0][0].status;
 
   if(status){
-    userUsername("");
+    setError(true);
     alert("Account exists");
   } else {
-
+    setError(false);
   }
 
 }
@@ -357,17 +359,19 @@ const getAmt = () => {
         </Link> */}
       </Stack>
 
-      
+      { error===false && 
       <LoadingButton fullWidth size="small" type="button" variant="contained"
-       onClick={
-        (e)=>{ 
-          
-          handleSubmit()
-        }
+      onClick={
+       (e)=>{ 
+         
+         handleSubmit()
+       }
+     }
+       >
+       Register
+     </LoadingButton>
       }
-        >
-        Register
-      </LoadingButton>
+      
     </>
   );
 }
