@@ -9,6 +9,7 @@ import {
   ListItemText,
   IconButton,
   Drawer,
+  Button
 } from '@mui/material';
 import React, { useState } from 'react';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
@@ -17,6 +18,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import useStyles from '../styles/styles';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { Helmet } from 'react-helmet-async';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 function ElevationScroll(props) {
   const { children, window } = props;
@@ -84,13 +87,17 @@ const Header = (props) => {
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
+    <>
+    <Helmet>
+    <title>Home</title>
+    </Helmet>
     <Box sx={{ marginBottom: '70px' }}>
       <ElevationScroll {...props}>
         <AppBar>
           <Toolbar className={classes.toolBar}>
-            <Link href="#" underline="none">
+            <Link href="/" underline="none">
               <Typography variant="h5" className={classes.logo}>
-                Auction System
+                Auction.com
               </Typography>
             </Link>
 
@@ -117,13 +124,18 @@ const Header = (props) => {
             ): <Box
               sx={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                gap:'2rem',
+                marginLeft:'700px',
                 flexGrow: '0.1',
               }}
             >
               {links.map((link) => (
                 <Link href={link.url} target="_blank" underline="none" key={link.id}>
-                  <Typography className={classes.link}>{link.route}</Typography>
+                  <Button variant="outlined"
+                  endIcon={<PersonAddAltIcon />}
+                  >
+                    <Typography className={classes.link}>{link.route}</Typography>
+                  </Button>
                 </Link>
               ))}
             </Box>}
@@ -132,6 +144,7 @@ const Header = (props) => {
         </AppBar>
       </ElevationScroll>
     </Box>
+    </>
   );
 };
 

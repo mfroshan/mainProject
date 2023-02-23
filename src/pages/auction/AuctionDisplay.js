@@ -36,12 +36,7 @@ export default function AuctionDisplay () {
        if(res.data){
           console.log(res.data[0][0]);
           setPlayer(res.data[0][0]);
-          if(player.length > 0){
             setAlert(true);
-          }else{
-            setAlert(false);
-          }
-          
        }
        else{
         setPlayer([]);
@@ -61,14 +56,7 @@ export default function AuctionDisplay () {
       
       console.log(alertMsg);
       
-        if(player?.length < 0){
-          setAlert(false);
-          console.log(player);
-          console.log(alertMsg);
-        }else{
-          console.log(player);
-          const {player_fname,Player_lname,Player_no,player_img,pos_name,total_bid_amt,baseamt,tbl_match_id,player_id} = player;
-        }    
+           
       
       
       
@@ -92,7 +80,13 @@ export default function AuctionDisplay () {
                 props.status===false &&
                   <div>
                    <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
-                  <Typography variant='h1'>
+                  <Typography variant='h1'
+                  sx={{
+                    display:'flex',
+                    justifyContent:'center',
+                    marginTop:'200px'
+                  }}
+                  >
                       Auctions is Not Yet Started !
                   </Typography>
                   </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Typography, Button, Box } from '@mui/material';
-import bestTeams from '../images/bestTeams.jpg';
+import bestTeams from '../images/13015.jpg';
 import useStyles from '../styles/styles';
 
 const AboutUs = () => {
@@ -15,13 +15,12 @@ const AboutUs = () => {
 
         <Grid item xs={12} md={6}>
           <Typography variant="h3" fontWeight={700} className={classes.title}>
-            We build, We revive
+            We Provide, You Organise
           </Typography>
-          <Typography className={classes.aboutUsSubtitle}>
-            Your business needs to be in safe hands at all times. We ensure you
-            never run out of customers and not run at loss. We are trusted by
-            over 500+ companies to deliver quality marketing campaigns using
-            Digital marketing & Offline marketing channels.
+          <Typography  className={classes.aboutUsSubtitle}>
+            Your Auction needs to be in safe hands at all times. We ensure you
+            Secure and Efficient System. We are trusted by
+            over 500+ People to deliver quality during auction.
           </Typography>
           <Button
             variant="contained"

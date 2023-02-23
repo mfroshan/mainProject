@@ -5,7 +5,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-
+import jsPDF from 'jspdf';
 
 // material
 import {
@@ -36,6 +36,7 @@ import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user';
 import AddPlayer from './AddPlayer';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 // import requestPost from '../serviceWorker';
 // mock
 // import USERLIST from '../_mock/user';
@@ -91,6 +92,25 @@ export default function PlayerDisplay() {
   const navigate = useNavigate()
   const ref = useRef(null);
   const location = useLocation();
+  const reportTemplateRef = useRef(null);
+
+	const handleGeneratePdf = () => {
+		// const doc = new jsPDF({
+		// 	format: 'a4',
+		// 	unit: 'px',
+		// });
+    
+    const doc = new jsPDF();
+
+    // doc.setFont('Inter-Regular', 'normal');
+
+		doc.html(reportTemplateRef.current, {
+			async callback(doc) {
+				await doc.save('Report');
+			},
+		});
+	};
+
   console.log(location);
 
   const handleClose = () => {
@@ -285,13 +305,21 @@ export default function PlayerDisplay() {
             New Player
           </Button>
         </Stack>
+        <Stack>
+          <IconButton
+          onClick={handleGeneratePdf}
+          >
+          <PictureAsPdfIcon />
+          </IconButton>
+        </Stack>
         <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)
         localStorage.removeItem("MacthId");
         }} />
+        <div ref={reportTemplateRef}>
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
+            <TableContainer  sx={{ minWidth: 800 }}>
               <Table>
                 <UserListHead
                   order={order}
@@ -377,6 +405,7 @@ export default function PlayerDisplay() {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
+        </div>
       </Container>
     </Page>
   );

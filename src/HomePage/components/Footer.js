@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <Box sx={{ flexGrow: 1 }} className={classes.footerContainer}>
       <Typography className={classes.footerText}>
-        Provided by{' '}
+        Created By{' '}
         <Link href="" target="_blank" underline="none">
           @Roshan
         </Link>

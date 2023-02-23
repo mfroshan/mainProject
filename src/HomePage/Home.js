@@ -28,7 +28,7 @@ function Home() {
       <Hero />
       <Section />
       <AboutUs />
-      <Testimonial />
+      {/* <Testimonial /> */}
       <ContactUs />
       <Footer />
       </ThemeProvider>
