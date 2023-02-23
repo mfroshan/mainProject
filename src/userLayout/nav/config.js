@@ -41,21 +41,6 @@ if(role === "Admin"){
     title: 'Host Details',
     path: '/dashboard/user',
     icon: icon('ic_user'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title: 'Player Register',
-    path: '/PlayerRegister',
-    icon: icon('ic_lock'),
-  },
-  {
-    title:'HostRegister Page',
-    path:'/HostRegister',
-    icon: icon('ic_lock'),
   });
 }else if(role==="Host"){
   navConfig.push({
@@ -64,18 +49,8 @@ if(role === "Admin"){
     icon: icon('ic_analytics'),
   },
   {
-    title: 'Team Details',
-    path: '/dashboard/team',
-    icon: icon('ic_user'),
-  },
-  {
-    title:'Player Details',
-    path:'/dashboard/player',
-    icon: icon('ic_user'),
-  },
-  {
-    title: 'Position Details',
-    path: '/dashboard/position',
+    title: 'Auctions',
+    path: '/dashboard/auctions',
     icon: icon('ic_user'),
   },
   {
@@ -92,17 +67,7 @@ if(role === "Admin"){
     title: 'Profile',
     path: '/dashboard/profile',
     icon: icon('ic_user'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title:'HostRegister Page',
-    path:'/HostRegister',
-    icon: icon('ic_lock'),
-  },
+  }
   );
  }else if(role==="Player"){
   navConfig.push({

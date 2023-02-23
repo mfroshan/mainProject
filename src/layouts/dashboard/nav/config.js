@@ -24,64 +24,34 @@ if(role === "Admin"){
   },
   {
     title: 'Team Details',
-    path: '/dashboard/team',
+    path: '/dashboard/viewteam',
     icon: icon('ic_user'),
   },
   {
     title:'Player Details',
-    path:'/dashboard/player',
+    path:'/dashboard/viewplayer',
     icon: icon('ic_user'),
   },
   {
     title: 'Position Details',
-    path: '/dashboard/position',
+    path: '/dashboard/viewpositon',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'Matches',
+    path: '/dashboard/viewmatches',
     icon: icon('ic_user'),
   },
   {
     title: 'Host Details',
     path: '/dashboard/user',
     icon: icon('ic_user'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title: 'Player Register',
-    path: '/PlayerRegister',
-    icon: icon('ic_lock'),
-  },
-  {
-    title:'HostRegister Page',
-    path:'/HostRegister',
-    icon: icon('ic_lock'),
   });
 }else if(role==="Host"){
   navConfig.push({
     title: 'dashboard',
     path: '/dashboard/app',
     icon: icon('ic_analytics'),
-  },
-  {
-    title: 'Team Details',
-    path: '/dashboard/team',
-    icon: icon('ic_user'),
-  },
-  {
-    title:'Player Details',
-    path:'/dashboard/player',
-    icon: icon('ic_user'),
-  },
-  {
-    title: 'Position Details',
-    path: '/dashboard/position',
-    icon: icon('ic_user'),
-  },
-  {
-    title: 'Host Details',
-    path: '/dashboard/user',
-    icon: icon('ic_user'),
   },
   {
     title: 'Match Details',
@@ -92,31 +62,30 @@ if(role === "Admin"){
     title: 'Profile',
     path: '/dashboard/profile',
     icon: icon('ic_user'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title:'HostRegister Page',
-    path:'/HostRegister',
-    icon: icon('ic_lock'),
-  },
+  },{
+    title: 'Auctions',
+    path: '/dashboard/auctions',
+    icon: icon('ic_user'),
+  }
   );
  }else if(role==="Player"){
   navConfig.push({
     title: 'Profile',
-    path: '/profile',
+    path: '/user/profile',
     icon: icon('ic_user'),
   });
  }else if(role==="Team"){
   navConfig.push({
     title: 'Profile',
-    path: '/profile',
+    path: '/user/profile',
     icon: icon('ic_user'),
-  });
+  },
+  {
+    title: 'Auction',
+    path: '/user/teambidview',
+    icon: icon('ic_user'),
+  }
+  );
  }
  return navConfig
 }
-

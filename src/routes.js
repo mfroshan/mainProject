@@ -25,9 +25,14 @@ import TeamRegister from './pages/TeamRegister';
 import BidSetup from './pages/Match/BidSetup';
 import PlayerProfile from './pages/auction/PlayerProfile';
 import TeamBidView from './pages/auction/TeamBidView';
-import HomeLayout from './HomePage/HomeLayout';
 import Home from './HomePage/Home';
 import Home404 from './HomePage/Home404';
+import AuctionDisplay from './pages/auction/AuctionDisplay';
+import MatchesAuction from './pages/auction/MatchesAuction';
+import AdminViewPlayer from './pages/Admin/AdminViewPlayer';
+import AdminViewTeam from './pages/Admin/AdminViewTeam';
+import AdminViewPosition from './pages/Admin/AdminViewPosition';
+import AdminViewMatches from './pages/Admin/AdminViewMatches';
 
 
 // ----------------------------------------------------------------------
@@ -66,7 +71,13 @@ export default function Router() {
         { path: 'matchdetails', element: <MatchDetails />},
         { path: 'bidsetup', element: <BidSetup />},
         { path: 'position', element: <ManagePosition />},
-        { path: 'profile', element: <Profile />},        
+        { path: 'profile', element: <Profile />}, 
+        { path: 'auctions' ,element: <MatchesAuction />},
+        { path: 'auctiondisplay', element: <AuctionDisplay />},
+        {path: 'viewplayer', element:<AdminViewPlayer />},   
+        {path:'viewteam', element: <AdminViewTeam />}, 
+        {path:'viewpositon',element: <AdminViewPosition />},
+        {path:'viewmatches',element:<AdminViewMatches />},   
         { path: '*', element: <Navigate to="/404" />}
       ],
     },

@@ -83,10 +83,7 @@ export default function  TeamBidView () {
       }
       
       
-      useEffect(() => {
-        display()
-        
-      }, [])
+      
 
       const { username,player_fname,Player_lname,Player_no,player_img,pos_name,total_bid_amt,baseamt,tbl_match_id,player_id} = player;
       
@@ -101,15 +98,23 @@ export default function  TeamBidView () {
                 matchdid: mid,
                 pid: pid, 
           }).then((res) => {
-                  console.log(res.data);
+                //   console.log(res.data);
             if (res.data[1][0].status === 1) {
                 setAuction(res.data[0]);
+            }else{
+                setAuction([]);
             }
-          })
-       
+          });
       };
+ 
+       
 
-    
+        
+      useEffect(() => {
+        display()
+           
+        
+      }, [])
 
 
       const validSchema = Yup.object().shape({
@@ -130,7 +135,7 @@ export default function  TeamBidView () {
 
       
    
-  
+      
   
     
     return (
@@ -264,8 +269,9 @@ export default function  TeamBidView () {
                     alignItems="center"
                      spacing={2}
                      >
-                {auctionValue.map((data)=>{
-
+                        
+                { auctionValue && auctionValue.map((data)=>{
+                    return(
                         <Grid item xs="auto">
                         <Item><Typography variant='h5'
                         sx={{
@@ -276,6 +282,7 @@ export default function  TeamBidView () {
                         </Typography>
                         </Item>
                         </Grid>
+                    )
                 })
                     
                 }

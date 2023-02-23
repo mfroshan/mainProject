@@ -140,6 +140,27 @@ const conn = mysql.createConnection({
         });
     });
 
+    // Team view to admin
+
+    app.post('/teamDisplayadmin',(req,res)=>{
+
+        
+        conn.query("call TeamDisplayadmin",
+        (err,result) => {
+
+                if(err){
+                    conosle.log(err);
+                }
+
+                if(result.length > 0 ) {
+                    console.log(result);
+                    res.send(result);
+                }else{
+                    console.log("No data");
+                }
+        });
+    });
+
     // getamt
 
     app.post('/getamt',(req,res)=>{
@@ -204,6 +225,23 @@ const conn = mysql.createConnection({
         });
     });
 
+    // 
+    app.post('/getPosadmin',(req,res)=>{
+
+        
+        conn.query("select * from tbl_position",
+        (err,result) => {
+
+                if(err){
+                    console.log(err);
+                }else if(result.length > 0 ) {
+                    console.log(result);
+                    res.send(result);
+                }else{
+                    console.log("No data");
+                }
+        });
+    });
 
     // check username 
     app.post('/checkEmail',(req,res)=>{
@@ -387,7 +425,7 @@ const conn = mysql.createConnection({
                         console.log(err);
                     }
                     else if(result.length > 0){
-                        console.log(result);
+                        
                         res.send(result);
                         // res.send({message:0}); 
                     }else{
@@ -414,7 +452,7 @@ const conn = mysql.createConnection({
                         console.log(err);
                     }
                     else if(result.length > 0){
-                        console.log(result);
+                        
                         res.send(result);
                         // res.send({message:0}); 
                     }else{
@@ -424,6 +462,29 @@ const conn = mysql.createConnection({
             });
     });
     
+    //
+    app.post('/auctionDisplaytoHost', (req,res) => {
+
+     
+        const mid = req.body.mid;
+
+        conn.query("call DisplayBidToHost(?)",
+            [mid],
+                (err,result) => {
+                    //res.send(result)
+                    if(err){ 
+                        console.log(err);
+                    }
+                    else if(result.length > 0){
+                        
+                        res.send(result);
+                        // res.send({message:0}); 
+                    }else{
+                        console.log("Account Already Exist");
+                        res.send({message:'Account Already Exist!'});
+                    }
+            });
+    });
 
     // display other team bid 
 
@@ -444,7 +505,7 @@ const conn = mysql.createConnection({
                         console.log(err);
                     }
                     else if(result.length > 0){
-                        console.log(result);
+                        
                         res.send(result);
                         // res.send({message:0}); 
                     }else{
@@ -507,6 +568,25 @@ const conn = mysql.createConnection({
         const mid = req.body.m_id;
         conn.query("call playerDisplay(?)",
         [mid],
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+
+    });
+
+    // Display all player
+
+    app.post('/playerdisplayadmin',(req,res)=>{
+        
+        
+        conn.query("call playerDisplayAdmin",
         (err,result)=>{
             if(err){
                 console.log(err);
@@ -584,6 +664,25 @@ const conn = mysql.createConnection({
         });
 
     });
+
+    
+    // admin view matches
+
+    app.post('/matchDetailsadmin',(req,res)=>{
+       
+        conn.query("call matchdisplayadmin",
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+    });
+
 
     // get Category
 

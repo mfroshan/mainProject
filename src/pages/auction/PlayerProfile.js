@@ -90,7 +90,11 @@ export default function  PlayerProfile () {
           }).then((res) => {
             console.log(res.data[0][0])
             if (res.data[0][0].status === 1) {
-                navigate(-1);
+                navigate('/dashboard/auctionDis',{state:
+                {
+                    mid:matchid
+                }
+            });
             }
           })
        
