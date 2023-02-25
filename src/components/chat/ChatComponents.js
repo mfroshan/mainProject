@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Comment } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import Chat from './Chat';
+import io from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
+var socket;
 
 const style = {
     margin: 0,
@@ -18,8 +21,8 @@ const style = {
    };
 const useStyles = makeStyles({
     liveChat : {
-        bottom: 300,
-        right:"47%",
+        bottom: 5,
+        right:"15%",
         position: "fixed",
         width: "300px",
         height: "600px",
@@ -30,20 +33,24 @@ const useStyles = makeStyles({
           right:0,
           top: 0,  
         }
-      }
+      },
+      
   });
 
-  const ChatComponent = ()=> {
+  const ChatComponent = (props)=> {
     const classes = useStyles();
     const [show, setShow] = useState(false);
 
     const toggleDiv = () => {
      setShow(!show)
    }
+
+
+
      return (
      <>
        <div className={classes.liveChat}>
-        {show && <Chat/> }
+        {show && <Chat data={props}/> }
        </div>
       <Button variant="fab" aria-label="add" style={style} onClick={toggleDiv} >
         <Comment/>

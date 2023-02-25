@@ -1,97 +1,288 @@
-import * as React from 'react';
-import { useState } from 'react';
+import Axios from 'axios';
+import {Link as Rlink } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { filter } from 'lodash';
+import { useEffect, useState } from 'react';
+// @mui
+import {
+  Card,
+  Table,
+  Stack,
+  Paper,
+  Button,
+  Popover,
+  TableRow,
+  MenuItem,
+  TableBody,
+  TableCell,
+  Container,
+  Typography,
+  IconButton,
+  TableContainer,
+  TablePagination,
+} from '@mui/material';
+// components
+import Label from '../components/label';
+import Iconify from '../components/iconify';
+import Scrollbar from '../components/Scrollbar';
+// sections
+import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+// mock
+// import USERLIST from '../_mock/User';
 
-import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import StepContent from '@mui/material/StepContent';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+// ----------------------------------------------------------------------
 
-const steps = [
-  {
-    label: 'Select campaign settings',
-    description: `For each ad campaign that you create, you can control how much
-              you're willing to spend on clicks and conversions, which networks
-              and geographical locations you want your ads to show on, and more.`,
-  },
-  {
-    label: 'Create an ad group',
-    description:
-      'An ad group contains one or more ads which target a shared set of keywords.',
-  },
-  {
-    label: 'Create an ad',
-    description: `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`,
-  },
+const TABLE_HEAD = [
+ 
+  { id: 'First_Name', label: 'First Name', alignLeft: false },
+  { id: 'Last_Name', label: 'Last Name', alignRight: false },
+  { id: 'username', label: 'Username', alignRight: false },
+  { id: 'Status', label: 'Status', alignRight: false },
+  
 ];
 
-export default function Stepper() {
-  const [activeStep, setActiveStep] = useState(0);
+// ----------------------------------------------------------------------
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function applySortFilter(array, comparator, query) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  if (query) {
+    return filter(array, (_user) => _user.host_fname.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+  }
+  return stabilizedThis.map((el) => el[0]);
+}
+
+
+
+
+
+export default function UserPage() {
+  
+
+
+  const [open, setOpen] = useState(null);
+
+  const [page, setPage] = useState(0);
+
+  const [order, setOrder] = useState('asc');
+
+  const [selected, setSelected] = useState([]);
+
+  const [orderBy, setOrderBy] = useState('name');
+
+  const [filterName, setFilterName] = useState('');
+
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [USERLIST, setUserList] = useState([]);
+
+  const handleOpenMenu = (event) => {
+    setOpen(event.currentTarget);
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+ 
+
+  
+
+  const handleCloseMenu = () => {
+    setOpen(null);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
   };
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = USERLIST.map((n) => n.name);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setPage(0);
+    setRowsPerPage(parseInt(event.target.value, 10));
+  };
+
+  const handleFilterByName = (event) => {
+    setPage(0);
+    setFilterName(event.target.value);
+  };
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+
+  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+
+  const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
-    <Box sx={{ maxWidth: 400 }}>
-      <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map((step, index) => (
-          <Step key={step.label}>
-            <StepLabel
-              optional={
-                index === 2 ? (
-                  <Typography variant="caption">Last step</Typography>
-                ) : null
-              }
-            >
-              {step.label}
-            </StepLabel>
-            <StepContent>
-              <Typography>{step.description}</Typography>
-              <Box sx={{ mb: 2 }}>
-                <div>
-                  <Button
-                    variant="contained"
-                    onClick={handleNext}
-                    sx={{ mt: 1, mr: 1 }}
-                  >
-                    {index === steps.length - 1 ? 'Finish' : 'Continue'}
-                  </Button>
-                  <Button
-                    disabled={index === 0}
-                    onClick={handleBack}
-                    sx={{ mt: 1, mr: 1 }}
-                  >
-                    Back
-                  </Button>
-                </div>
-              </Box>
-            </StepContent>
-          </Step>
-        ))}
-      </Stepper>
-      {activeStep === steps.length && (
-        <Paper square elevation={0} sx={{ p: 3 }}>
-          <Typography>All steps completed - you&apos;re finished</Typography>
-          <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-            Reset
+    <>
+      <Helmet>
+        <title> Host </title>
+      </Helmet>
+
+      <Container>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Typography variant="h4" gutterBottom>
+            Host
+          </Typography>
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+            New User
           </Button>
-        </Paper>
-      )}
-    </Box>
+        </Stack>
+
+        <Card>
+          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+
+          <Scrollbar>
+            <TableContainer sx={{ minWidth: 800 }}>
+              <Table>
+                <UserListHead
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={USERLIST.length}
+                  numSelected={selected.length}
+                  onRequestSort={handleRequestSort}
+                  onSelectAllClick={handleSelectAllClick}
+                />
+                <TableBody>
+                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                   
+                    // const selectedUser = selected.indexOf(FName + Lname) !== -1;
+
+                    return (
+                      
+                      <TableRow hover key={row.host_id} tabIndex={-1} role="checkbox" >
+                        {console.log(row.host_id)}
+                            
+                          <TableCell align='left'>
+                                {row.host_fname}
+                          </TableCell>
+  
+                          <TableCell align="left">{row.host_lname}</TableCell>
+  
+                          <TableCell align="left">{row.Username}</TableCell>
+  
+                          <TableCell align="left">
+                            <Label color={(row.Status === 'banned' && 'error') || 'success'}>{row.Status}</Label>
+                          </TableCell>
+  
+                          <TableCell align="right">  
+                            <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                              <Iconify icon={'eva:more-vertical-fill'} />
+                            </IconButton>
+                           </TableCell>
+                           <TableCell>
+                           <Popover
+                                  open={Boolean(open)}
+                                  anchorEl={open}
+                                  onClose={handleCloseMenu}
+                                  anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                  PaperProps={{
+                                    sx: {
+                                      p: 1,
+                                      width: 140,
+                                      '& .MuiMenuItem-root': {
+                                        px: 1,
+                                        typography: 'body2',
+                                        borderRadius: 0.75,
+                                      },
+                                    },
+                                  }}
+                                >
+                              <MenuItem>
+                                <Rlink to={`/Edit/${row.host_id}`}><Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} /></Rlink>
+                                Edit
+                              </MenuItem>
+                              
+
+                              <MenuItem sx={{ color: 'error.main' }}>
+                                <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+                                Delete
+                              </MenuItem>
+                            </Popover>
+                           </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
+                </TableBody>
+
+                {isNotFound && (
+                  <TableBody>
+                    <TableRow>
+                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                        <Paper
+                          sx={{
+                            textAlign: 'center',
+                          }}
+                        >
+                          <Typography variant="h6" paragraph>
+                            Not found
+                          </Typography>
+
+                          <Typography variant="body2">
+                            No results found for &nbsp;
+                            <strong>&quot;{filterName}&quot;</strong>.
+                            <br /> Try checking for typos or using complete words.
+                          </Typography>
+                        </Paper>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                )}
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={USERLIST.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Card>
+      </Container>
+
+      
+    </>
   );
 }

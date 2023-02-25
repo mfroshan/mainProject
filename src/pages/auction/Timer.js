@@ -2,27 +2,42 @@ import React,{useState, useEffect } from 'react'
 import {Typography } from '@mui/material';
 
 
-
-
  const  Timer = (props) => {
     
-    const [ time, setTime] = useState("30");
+    const [ time, setTime] = useState("60");
 
-    let maxTime=0;
+    console.log(props.timercall);
+
+    let maxTime = props.maxTime;
+
     
+let timer;
+
     const timeChange = () => {
         maxTime--;
-        if(maxTime!==0 && maxTime >=0){
+        if(maxTime !==0 && maxTime >=0){
             setTime(maxTime);
         }else{
             
-            setTime('Times Up');
+            setTime('60');
+            window.location.reload();
         }
   };
 
-  useEffect(()=>{
-   maxTime = props.maxTime ? props.maxTime : 30;
-  },[])
+  
+
+  
+
+    useEffect(()=>{
+        maxTime = props.maxTime ? props.maxTime : time;
+            
+                
+           
+        // timer = setInterval(timeChange,1000);    
+          
+            
+       },[])
+  
   return (
         <Typography
                     variant='h4'
@@ -31,7 +46,7 @@ import {Typography } from '@mui/material';
                         color:'orange'
                     }}
                         >
-                        {`${time} sec`}
+                      TIME LEFT:  {`${time} sec`}
                     </Typography>
   )
 }

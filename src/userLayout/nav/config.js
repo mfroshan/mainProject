@@ -74,6 +74,11 @@ if(role === "Admin"){
     title: 'Profile',
     path: '/user/profile',
     icon: icon('ic_user'),
+  },
+  {
+    title: 'Auction',
+    path: '/user/viewauction',
+    icon: icon('ic_user'),
   });
  }else if(role==="Team"){
   navConfig.push({

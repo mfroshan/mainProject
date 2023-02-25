@@ -4,6 +4,7 @@ import myteam from '../images/20945153.jpg';
 import useStyles from '../styles/styles';
 import { useNavigate } from 'react-router-dom';
 
+
 const Hero = () => {
 
   const navigate = useNavigate();

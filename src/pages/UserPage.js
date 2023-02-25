@@ -1,44 +1,58 @@
-import Axios from 'axios';
-import {Link as Rlink } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { useEffect, useState } from 'react';
-// @mui
+import axios from 'axios';
+import { sentenceCase } from 'change-case';
+import { useState, useEffect, useRef } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+
+
+
+// material
 import {
+  Menu, 
+  MenuItem, 
+  ListItemIcon, 
+  ListItemText,
   Card,
   Table,
   Stack,
-  Paper,
+  Avatar,
   Button,
-  Popover,
+  Checkbox,
   TableRow,
-  MenuItem,
   TableBody,
   TableCell,
   Container,
   Typography,
-  IconButton,
   TableContainer,
   TablePagination,
 } from '@mui/material';
+
 // components
+import Page from '../components/Page';
 import Label from '../components/label';
-import Iconify from '../components/iconify';
 import Scrollbar from '../components/Scrollbar';
-// sections
-import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+import Iconify from '../components/iconify';
+import SearchNotFound from '../components/SearchNotFound';
+import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
+import AddHost from './Host/AddHost';
+
 // mock
-// import USERLIST from '../_mock/User';
+// import USERLIST from '../_mock/user';
+
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
- 
-  { id: 'First_Name', label: 'First Name', alignLeft: false },
-  { id: 'Last_Name', label: 'Last Name', alignRight: false },
+  { id: 'fname', label: 'Team Fname', alignRight: false },
+  { id: 'lname', label: 'Team Lname', alignRight: false },
   { id: 'username', label: 'Username', alignRight: false },
+  { id: 'PhoneNo', label: 'Phone Number', alignRight: false },
+  { id: 'Image', label: 'Image', alignRight: false },
   { id: 'Status', label: 'Status', alignRight: false },
-  
+  { id: '' },
 ];
 
 // ----------------------------------------------------------------------
@@ -67,20 +81,43 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.host_fname.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || _user.mobile.indexOf(query) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
+export default function TeamDisplay() {
+  const navigate = useNavigate()
+  const ref = useRef(null);
 
-
-
-
-export default function UserPage() {
+  const handleClose = () => {
+    setDialog();
+  };
+  const [USERLIST,setUserList] = useState([]);
   
+      const display = () =>{
+        axios.post("http://localhost:3001/hostdisplay",{
+        }).then((res) => {
+       if(res.data){
+        console.log(res.data)
+          setUserList(res.data[0]);
+       }
+       else{
+        setUserList([]);
+       }
+        }).catch((error) => {
+          console.log(error);
+            console.log('No internet connection found. App is running in offline mode.');
+          });
+      }
+      
+  useEffect(() => {
+   display();
+  }, [])
+  
+  const [open, setOpen] = useState(true);
 
-
-  const [open, setOpen] = useState(null);
+  const [addDialog, setDialog] = useState();
 
   const [page, setPage] = useState(0);
 
@@ -92,31 +129,7 @@ export default function UserPage() {
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const [USERLIST, setUserList] = useState([]);
-
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
-
- 
-
-  const list = () =>{
-    Axios.post("http://localhost:3001/hostdisplay", {
-    }).then((response) =>{
-        // setdata(response);
-         setUserList(response.data);
-        // console.log(response.data);
-    });
-  }  
-  useEffect(()=>{
-    list();
-  },[]);
-
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -133,18 +146,38 @@ export default function UserPage() {
     setSelected([]);
   };
 
+  
+
+  const handleAdd = (e, upd = Boolean(false), button = 'ADD', data = {}) => {
+    const add = (data) => {
+      setOpen(false) ;
+      setDialog();
+      display();
+    };
+    setDialog(() => (
+      <AddHost
+        onClose={handleClose}
+        open={open}
+         submit={add}
+         updated={upd}
+         button={button}
+         data={data}
+      />
+    ));
+    setOpen(true);
+  };
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const handleFilterByName = (event) => {
-    setPage(0);
     setFilterName(event.target.value);
   };
 
@@ -152,27 +185,79 @@ export default function UserPage() {
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
-  const isNotFound = !filteredUsers.length && !!filterName;
+  const isUserNotFound = filteredUsers.length === 0;
+
+ 
+  const StatusMenu = (prop)=>{
+    console.log(prop);
+    const ref = useRef(null)
+    const [isOpen, setIsOpen] = useState(false);
+    const spcall = (status)=>{
+      axios.post("http://localhost:3001/HostStatus",{
+        id:  prop.aid,
+        status: status,
+      }).then((res) => {
+        console.log(res.data);
+         display();
+          }).catch(() => {
+              console.log('No internet connection found. App is running in offline mode.');
+          });
+     }
+     
+    return(
+      <>
+      <IconButton ref={ref} onClick={() => setIsOpen(true)}>
+        <Iconify icon="eva:more-vertical-fill" width={20} height={20} />
+      </IconButton>
+      <Menu
+        open={isOpen}
+        anchorEl={ref.current}
+        onClose={() => setIsOpen(false)}
+        PaperProps={{
+          sx: { width: 200, maxWidth: '100%' },
+        }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+         {prop.status !== 0 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{spcall(1)}}>
+            <ListItemIcon>
+               <Iconify icon="fontisto:radio-btn-active" width={24} height={24} color='#00b300' />
+            </ListItemIcon>
+            <ListItemText primary="Activate" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>}
+          {prop.status !== 1 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{spcall(0)}}>
+            <ListItemIcon>
+               <Iconify icon="el:remove-circle" width={24} height={24}  color='#cc2900'/>
+            </ListItemIcon>
+            <ListItemText primary="Deactivate" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>}
+          <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+          <ListItemIcon>
+            <Iconify icon="eva:edit-fill" width={24} height={24} />
+          </ListItemIcon>
+          <ListItemText onClick={(e)=>handleAdd(e,true,'EDIT',prop.row)} primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
+        </MenuItem>
+        </Menu></>);
+  }
+
+
 
   return (
-    <>
-      <Helmet>
-        <title> Host </title>
-      </Helmet>
-
-      <Container>
+    <Page title="Host">
+      <Container maxWidth="xl">
+      {addDialog}
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Host
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
+          <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
+            New Host
           </Button>
         </Stack>
 
+        
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -183,66 +268,50 @@ export default function UserPage() {
                   rowCount={USERLIST.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
+                 // onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    // const {host_id, host_fname, host_lname, Username } = row;
-                    // const selectedUser = selected.indexOf(FName + Lname) !== -1;
-
+                  {filteredUsers && filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const {host_id, host_fname, host_lname, Username,hostImage,HPhone_No,L_Status } = row;
+                   // const selectedUser = selected.indexOf(FName + Lname) !== -1;
+                   let stst = 'Active'
+                  
+                   if(L_Status === 1){
+                     stst = 'InActive'
+                   }
+                   
                     return (
-                      
-                      <TableRow hover key={row.host_id} tabIndex={-1} role="checkbox" >
-                        {console.log(row.host_id)}
+                      <TableRow>                      
+                        <TableCell component="th" scope="row" >
+                            <Typography variant="h6" >
+                              {host_fname}
+                            </Typography>
+                        </TableCell>
+                        <TableCell component="th" scope="row" >
+                            <Typography variant="h6" >
+                              {host_lname}
+                            </Typography>
+                        </TableCell>
+                        <TableCell align="left">{Username}</TableCell>
+                          <TableCell align="left">{HPhone_No}</TableCell>
+                          <TableCell align="left" style={{    
+                            height: "250px",width: "250px"
+                          }}>
                             
-                          <TableCell align='left'>
-                                {row.host_fname}
+                            <img src= {hostImage} alt="PlayerImages"/>
+                            
                           </TableCell>
-  
-                          <TableCell align="left">{row.host_lname}</TableCell>
-  
-                          <TableCell align="left">{row.Username}</TableCell>
   
                           <TableCell align="left">
-                            <Label color={(row.Status === 'banned' && 'error') || 'success'}>{row.Status}</Label>
-                          </TableCell>
+                          <Label  color={L_Status ? 'error' : 'success'}>
+                            {stst}
+                          </Label>
+                        </TableCell>
   
-                          <TableCell align="right">  
-                            <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                              <Iconify icon={'eva:more-vertical-fill'} />
-                            </IconButton>
-                           </TableCell>
-                           <TableCell>
-                           <Popover
-                                  open={Boolean(open)}
-                                  anchorEl={open}
-                                  onClose={handleCloseMenu}
-                                  anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                  PaperProps={{
-                                    sx: {
-                                      p: 1,
-                                      width: 140,
-                                      '& .MuiMenuItem-root': {
-                                        px: 1,
-                                        typography: 'body2',
-                                        borderRadius: 0.75,
-                                      },
-                                    },
-                                  }}
-                                >
-                              <MenuItem>
-                                <Rlink to={`/Edit/${row.host_id}`}><Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} /></Rlink>
-                                Edit
-                              </MenuItem>
-                              
 
-                              <MenuItem sx={{ color: 'error.main' }}>
-                                <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                                Delete
-                              </MenuItem>
-                            </Popover>
-                           </TableCell>
+                        <TableCell align="right" >
+                        <StatusMenu ref={ref}  status={L_Status} aid={host_id} row={row} />
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -253,25 +322,11 @@ export default function UserPage() {
                   )}
                 </TableBody>
 
-                {isNotFound && (
+                {isUserNotFound && (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Typography variant="h6" paragraph>
-                            Not found
-                          </Typography>
-
-                          <Typography variant="body2">
-                            No results found for &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
-                          </Typography>
-                        </Paper>
+                        <SearchNotFound searchQuery={filterName} />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -291,8 +346,6 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-
-      
-    </>
+    </Page>
   );
 }

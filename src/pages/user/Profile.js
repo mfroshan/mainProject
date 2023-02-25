@@ -53,6 +53,9 @@ export default function Profile(props) {
             console.log(res.data)
             if (res.data[1][0].status === 0) {
               console.log(res.data[0])
+              localStorage.setItem("mid",res.data[0][0].mid);
+              localStorage.setItem("fname",res.data[0][0].fname);
+              localStorage.setItem("lname",res.data[0][0].lname);
               setdatas(res.data[0][0]);
               if(res.data[0][0].img !== null){
                 setImg(res.data[0][0].img);

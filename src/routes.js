@@ -33,6 +33,7 @@ import AdminViewPlayer from './pages/Admin/AdminViewPlayer';
 import AdminViewTeam from './pages/Admin/AdminViewTeam';
 import AdminViewPosition from './pages/Admin/AdminViewPosition';
 import AdminViewMatches from './pages/Admin/AdminViewMatches';
+import ViewAuction from './pages/user/ViewAuction';
 
 
 // ----------------------------------------------------------------------
@@ -96,7 +97,8 @@ export default function Router() {
       children: [
         { element: <Navigate to="/user/profile" />, index: true },
         { path: 'profile', element: <Profile />},
-        { path: 'teambidview', element: <TeamBidView />},          
+        { path: 'teambidview', element: <TeamBidView />},
+        { path: 'viewauction', element: <ViewAuction />},          
         { path: '*', element: <Navigate to="/User404" />}
       ],
     },

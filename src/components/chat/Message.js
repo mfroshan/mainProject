@@ -92,7 +92,8 @@ const useStyles = makeStyles({
       fontWeight: "300",
       marginTop: "10px",
       bottom: "1px",
-      right: "5px"
+      right: "5px",
+      padding:"5"
     },
 
     orange: {

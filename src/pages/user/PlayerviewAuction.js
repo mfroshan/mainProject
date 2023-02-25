@@ -4,14 +4,14 @@ import CardMedia from '@mui/material/CardMedia';
 import Paper from '@mui/material/Paper';
 import Item from '@mui/material/ListItem';
 import CardContent from '@mui/material/CardContent';
-import Timer from './Timer';
+// import Timer from './Timer';
 import EditIcon from '@mui/icons-material/Edit';
 import Axios from 'axios';
 import io from 'socket.io-client';
 
 var socket;
 
-export const Auctions = (props) => {
+export const PlayerViewAuction = (props) => {
 
     const [ amt , lastAmt] = useState('');
 
@@ -22,6 +22,8 @@ export const Auctions = (props) => {
     const [ auctionValue ,setAuction ] = useState([]);
 
     const  mid = localStorage.getItem("mid");
+
+    
 
     useEffect(() => {
 
@@ -58,7 +60,7 @@ export const Auctions = (props) => {
                     </Typography>
 
                                         
-                    <Timer />
+                    {/* <Timer /> */}
                     
                     <Grid container
                      direction="column"
@@ -138,4 +140,4 @@ export const Auctions = (props) => {
   )
 }
 
-export default Auctions;
+export default PlayerViewAuction;

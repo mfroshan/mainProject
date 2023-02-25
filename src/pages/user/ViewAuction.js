@@ -3,21 +3,20 @@ import React from 'react';
 import { useState,useEffect} from 'react';
 import { useLocation,useNavigate } from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'; 
-import Auctions from './Auctions';
 import Typography from '@mui/material/Typography';
+import { PlayerViewAuction } from './PlayerviewAuction';
 
 
-export default function AuctionDisplay () {
+export default function ViewAuction () {
   
     
 
     const navigate = useNavigate();
 
-    const location = useLocation();
+    
 
     // console.log(location);
 
-    localStorage.setItem("mid",location.state.mid);
 
     const [alertMsg, setAlert] = useState(false);
 
@@ -73,7 +72,7 @@ export default function AuctionDisplay () {
                 props.status===true &&
                 <div>
                   <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
-                   <Auctions data={player}/>
+                   <PlayerViewAuction data={player}/>
                 </div>
               }
               {
