@@ -34,6 +34,7 @@ import AdminViewTeam from './pages/Admin/AdminViewTeam';
 import AdminViewPosition from './pages/Admin/AdminViewPosition';
 import AdminViewMatches from './pages/Admin/AdminViewMatches';
 import ViewAuction from './pages/user/ViewAuction';
+import AuctionDetails from './pages/auction/AuctionDetails';
 
 
 // ----------------------------------------------------------------------
@@ -74,6 +75,7 @@ export default function Router() {
         { path: 'position', element: <ManagePosition />},
         { path: 'profile', element: <Profile />}, 
         { path: 'auctions' ,element: <MatchesAuction />},
+        {path:'auctiondetails',element:<AuctionDetails />},
         { path: 'auctiondisplay', element: <AuctionDisplay />},
         {path: 'viewplayer', element:<AdminViewPlayer />},   
         {path:'viewteam', element: <AdminViewTeam />}, 

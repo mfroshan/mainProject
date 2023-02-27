@@ -1076,6 +1076,73 @@ const conn = mysql.createConnection({
         });
     });
 
+    // change pending players
+
+    app.post('/changePending' , (req,res) => {
+        const id = req.body.mid;
+        conn.query("call PendingAuctionAction(?)",
+        [id],
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+                else if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No user found!");
+                    res.send({message:'User Not Found!'});
+                }
+        });
+    });
+
+
+    // Chechk Auction status
+    app.post('/AuctionCheck' , (req,res) => {
+        const id = req.body.mid;
+        conn.query("call AuctionCheck(?)",
+        [id],
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+                else if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No user found!");
+                    res.send({message:'User Not Found!'});
+                }
+        });
+    });
+
+
+    //
+    app.post('/DisplayAuctionDetails' , (req,res) => {
+        const mid = req.body.mid;
+        conn.query("call AuctionDetails(?)",
+        [mid],
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+                else if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No user found!");
+                    res.send({message:'User Not Found!'});
+                }
+        });
+    });
+
+
     // profile Display
 
     app.post('/getProflileDetails' , (req,res) => {

@@ -10,6 +10,9 @@ import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../../components/iconify';
 
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+
 // ----------------------------------------------------------------------
 
 
@@ -31,24 +34,25 @@ export default function HostRegister() {
   const [setLname, userLname ] = useState();
 
   const [showPassword, setShowPassword] = useState(false);
+  
+  const [error, setError] = useState(false);
 
   // const handleClick = () => {
   //   navigate('/dashboard', { replace: true });
   // };
 
   const registerHost = (e) =>{
-    e.preventDefault();
     Axios.post("http://localhost:3001/hostreg", {
 
-      username: setname,
-      password: setpassword,
-      fname: setFname,
-      lname: setLname,
+      username: values.username,
+      password: values.password,
+      fname: values.fname,
+      lname: values.lname,
       
     }).then((response) =>{
       console.log(response.data[0][0]);
       if(response.data[0][0].status === 0){        
-          navigate('/',{replace:true});
+          navigate('/login',{replace:true});
       }
       else{
         console.log(response.data[0][0].msg)
@@ -57,31 +61,71 @@ export default function HostRegister() {
       }
       });
 }
+
+
+  const validSchema = Yup.object().shape({
+
+    username: Yup.string().email('Not a valid Email!').required('Email is required'),    
+    fname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('First Name is required'),
+    lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
+    password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      fname:  '',
+      lname:  '',
+      password:  '',
+    },
+    validationSchema: validSchema,
+    onSubmit: (values, actions) => {
+      registerHost();
+    }
+  });
+  
+  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
+
+  console.log(formik);
+
+  const checkEmail = async () => {
+    console.log(values.username)
+    let res = await Axios.post("http://localhost:3001/checkEmail",{email: values.username});
+    let status = res.data[0][0].status;
+  
+    if(status){
+      setError(true);
+      alert("Account exists");
+    } else {
+      setError(false);
+    }
+  
+  }
+
+
   return (
     <>
       <ToastContainer />
       <Stack spacing={3}>
         <TextField name="email" label="Email address" 
-        
-        onChange={(e)=>{
-          userUsername(e.target.value);
-        }}/>
-        <TextField name="Fname" label="First Name" onChange={
-          (e)=>{
-          userFname(e.target.value);
-        }}/>
+        {...getFieldProps('username')}
+        helperText={touched.username && errors.username}
+        error={Boolean(touched.username && errors.username)}
+        onBlur={()=> checkEmail()}
+        />
+        <TextField name="Fname" label="First Name"
+           {...getFieldProps('fname')}
+           helperText={touched.fname && errors.fname}
+           error={Boolean(touched.fname && errors.fname)}
+           />
         <TextField name="Lname" label="Last Name" 
-        onChange={
-          (e)=>{
-          userLname(e.target.value);
-        }}
+         {...getFieldProps('lname')}
+         helperText={touched.lname && errors.lname}
+         error={Boolean(touched.lname && errors.lname)}
          />
         <TextField
           name="password"
           label="Password"
-          onChange={(e)=>{
-            UserPassword(e.target.value);
-          }}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -92,6 +136,9 @@ export default function HostRegister() {
               </InputAdornment>
             ),
           }}
+          {...getFieldProps('password')}
+          helperText={touched.password && errors.password}
+          error={Boolean(touched.password && errors.password)}
         />
       </Stack>
 
@@ -102,9 +149,11 @@ export default function HostRegister() {
         </Link>
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={registerHost}>
+      {error===false && 
+      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
         Register
       </LoadingButton>
+      }
     </>
   );
 }

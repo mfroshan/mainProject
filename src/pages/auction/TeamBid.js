@@ -40,10 +40,25 @@ export default function  TeamBid (props) {
     const [displayname, setdisplayName] = useState();
      
     const [timerTime, setTimertime] = useState();
+
+    const [biStatus,setBistatus] = useState();
    
       var bidamountleft = localStorage.getItem("bidAmt-left");
       
-      
+      const Auctioncheck = () => {
+
+        axios.post("http://localhost:3001/AuctionCheck",{
+          mid: mid,
+        }).then((res) => {
+       if(res.data[0]){
+        setBistatus(res.data[0][0].status);
+          }
+        }).catch((error) => {
+          console.log(error);
+            console.log('No internet connection found. App is running in offline mode.');
+          });
+      }
+
         
         const  mid = localStorage.getItem("mid");
         const teamid = localStorage.getItem("TeamID");
@@ -101,6 +116,7 @@ export default function  TeamBid (props) {
             
             AuctionHistory()
             timerSetting()
+            Auctioncheck()
       socket = io('http://localhost:3001') 
      
       
@@ -176,8 +192,14 @@ export default function  TeamBid (props) {
                   
                 }
                 const timerCallback = () => {
+                    if(biStatus===1){
+                        props.display('Please Wait For Players!');
+                    }else{
+                        props.display('Auction Has Finished!');
+                    }
                     
                 }
+
                 console.log(timerTime)
     return (
         <div>

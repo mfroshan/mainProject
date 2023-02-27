@@ -6,6 +6,8 @@ import { styled } from '@mui/material/styles';
 import { Link, Container, Typography, Divider } from '@mui/material';
 // hooks
 import useResponsive from '../hooks/useResponsive';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 // components
 
 // import Logo from '../components/logo'
@@ -53,7 +55,7 @@ export default function HostReg() {
   return (
     <>
       <Helmet>
-        <title> Login | Minimal UI </title>
+        <title> Login </title>
       </Helmet>
 
       <StyledRoot>

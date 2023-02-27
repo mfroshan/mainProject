@@ -20,11 +20,41 @@ export const Auctions = (props) => {
 
     const [ auctionValue ,setAuction ] = useState([]);
 
+    const [timerTime, setTimertime] = useState();
+
     const  mid = localStorage.getItem("mid");
 
     const navigate = useNavigate();
 
+
+    const timeCalculate = (times)=>{
+        const cDate = new Date();
+        const lDate = new Date(times);
+        const fSec = cDate.getTime() - lDate.getTime();
+        setTimertime(20-Math.floor(fSec/1000));
+        console.log(20-Math.floor(fSec/1000));
+    }
+    const timerSetting = ()=>{
+        Axios.post("http://localhost:3001/getTime",{
+          mid: mid,
+          pid:props.data.player_id,
+        }).then((res) => {
+       if(res.data[0]){
+        // console.log(res.data)
+        //setTimertime(res.data[0][0].last_time)
+        timeCalculate(res.data[0][0].last_time)
+       // console.log(res.data[0][0].last_time);
+          }
+        }).catch((error) => {
+          console.log(error);
+            console.log('No internet connection found. App is running in offline mode.');
+          });
+    }
+
+
     useEffect(() => {
+
+        timerSetting()
 
     socket = io('http://localhost:3001')      
       
@@ -93,7 +123,7 @@ export const Auctions = (props) => {
                     </Typography>
 
                                         
-                    <Timer maxTime={20} callback={timerCallback} />
+                    {timerTime && <Timer  maxTime={timerTime} callback={timerCallback}/>}
                     
                     <Grid container
                      direction="column"
