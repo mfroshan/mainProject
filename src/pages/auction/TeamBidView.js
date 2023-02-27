@@ -6,23 +6,27 @@ import { useState,useEffect} from 'react';
 import { useLocation,useNavigate } from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import TeamBid from './TeamBid';
+import io from 'socket.io-client';
 
 
 var socket;
 
 export default function  TeamBidView () {
   
-    
 
     const navigate = useNavigate();
+
+    const [msg,setMsg] = useState('');
     
     const [alertMsg, setAlert] = useState();
 
     const [ player, setPlayer]  = useState([]);
  
     // let mid = localStorage.getItem("MatchID");
+
     
-    const display = () => {
+    const display =(msgg) => {
+        setMsg(msgg);
         const username = localStorage.getItem("User_Name");
         const role = localStorage.getItem("Role");
         axios.post("http://localhost:3001/auctionDisplay",{
@@ -50,21 +54,32 @@ export default function  TeamBidView () {
     
 
         useEffect(() => {
-            display();
+            display("Auction Has Not Started!");
+
+            socket = io('http://localhost:3001') 
+
+            socket.on("auction-stats", (matchid,playerid)=>{
+              display("Please Wait For Next Player!");
+              console.log(matchid);
+              console.log(playerid);
+              console.log("Auction Started!");
+              
+          })
+
       }, [])
 
       const StatusMenu = (props) => {
         return(
             <>
               {
-                props.status===true &&
+                props.status &&
                 <div>
                   
-                   <TeamBid data={player}/>
+                   <TeamBid data={player} display={display}/>
                 </div>
               }
               {
-                props.status===false &&
+                !props.status &&
                   <div>
                    <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
                   <Typography variant='h1'
@@ -74,7 +89,7 @@ export default function  TeamBidView () {
                     marginTop:'200px'
                   }}
                   >
-                      Auctions is Not Yet Started !
+                      {msg}
                   </Typography>
                   </div>
               }

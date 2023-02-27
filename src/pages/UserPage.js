@@ -37,7 +37,7 @@ import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
-import AddHost from './Host/AddHost';
+import AddHost from './AddHost';
 
 // mock
 // import USERLIST from '../_mock/user';
@@ -86,7 +86,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function TeamDisplay() {
+export default function UserPage() {
   const navigate = useNavigate()
   const ref = useRef(null);
 
@@ -98,7 +98,7 @@ export default function TeamDisplay() {
       const display = () =>{
         axios.post("http://localhost:3001/hostdisplay",{
         }).then((res) => {
-       if(res.data){
+       if(res.data[0]){
         console.log(res.data)
           setUserList(res.data[0]);
        }
@@ -189,7 +189,7 @@ export default function TeamDisplay() {
 
  
   const StatusMenu = (prop)=>{
-    console.log(prop);
+    
     const ref = useRef(null)
     const [isOpen, setIsOpen] = useState(false);
     const spcall = (status)=>{

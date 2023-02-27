@@ -12,8 +12,9 @@ import Paper from '@mui/material/Paper';
 import Item from '@mui/material/ListItem';
 import io from 'socket.io-client';
 import Timer from './Timer';
+import TableContainer from '@mui/material/TableContainer';
 import Chat from '../../components/chat/ChatComponents';
-
+import TableHead from '@mui/material/TableHead';
 
 
 var socket;
@@ -24,18 +25,21 @@ export default function  TeamBid (props) {
 
     const navigate = useNavigate();
     
-    const [alertMsg, setAlert] = useState();
+    const [alertMsg, setAlert] = useState(false);
 
     const [bidamt, setbidAmt] = useState(false);
 
     const [ amt , lastAmt] = useState('');
 
-    const [timer,setTimer] = useState(false);
+    const [ BidHistory , setBidHistory ] = useState([]);
+
+    const [timer, setTimer] = useState(false);
 
     const [ socketID , setSocket ] = useState(false);
     
     const [displayname, setdisplayName] = useState();
      
+    const [timerTime, setTimertime] = useState();
    
       var bidamountleft = localStorage.getItem("bidAmt-left");
       
@@ -46,17 +50,45 @@ export default function  TeamBid (props) {
         const  fname = localStorage.getItem("fname");
         const lname = localStorage.getItem("lname");
 
+        const timeCalculate = (times)=>{
+            const cDate = new Date();
+            const lDate = new Date(times);
+            const fSec = cDate.getTime() - lDate.getTime();
+            setTimertime(20-Math.floor(fSec/1000));
+            console.log(20-Math.floor(fSec/1000));
+        }
+        const timerSetting = ()=>{
+            axios.post("http://localhost:3001/getTime",{
+              mid: mid,
+              pid:props.data.player_id,
+            }).then((res) => {
+           if(res.data[0]){
+            // console.log(res.data)
+            //setTimertime(res.data[0][0].last_time)
+            timeCalculate(res.data[0][0].last_time)
+           // console.log(res.data[0][0].last_time);
+              }
+            }).catch((error) => {
+              console.log(error);
+                console.log('No internet connection found. App is running in offline mode.');
+              });
+        }
+
 
         const AuctionHistory = () => {
 
             axios.post("http://localhost:3001/AuctionHistory",{
-              mid:props.data.mid,
+              mid: mid,
+              pid:props.data.player_id,
             }).then((res) => {
            if(res.data[0]){
-            
+            console.log(res.data)
+            setBidHistory(res.data[0]);
+            setAlert(true);
               }
            else{
-            
+                setBidHistory([]);
+                setAlert(false);
            }
             }).catch((error) => {
               console.log(error);
@@ -67,8 +99,13 @@ export default function  TeamBid (props) {
 
         useEffect(() => {
             
-
-      socket = io('http://localhost:3001')      
+            AuctionHistory()
+            timerSetting()
+      socket = io('http://localhost:3001') 
+     
+      
+ 
+    
       
       socket.emit("setup",mid);
       
@@ -91,8 +128,13 @@ export default function  TeamBid (props) {
         }
        })
 
+       
+        
       }, [])
 
+      
+      
+     
 
       const validSchema = Yup.object().shape({
         bidamt: Yup.string('Bid Amount is Required!').required('Bid Amount is required'),
@@ -118,13 +160,10 @@ export default function  TeamBid (props) {
             setbidAmt(true);
         }else{
             setbidAmt(false);
-            // if( bidamountleft > values.bidamt){
-                
-            //     localStorage.setItem("bidAmt-left",bidamountleft-values.bidamt);
-            // }else{
-            //     alert("Check Your Bid Amount Left");
-            //     setbidAmt(true);
-            // }
+            if(BidHistory.length > 0){
+                console.log("BidHistory:"+BidHistory[0].bidamt);
+            }
+           
         }
   }
 
@@ -133,9 +172,13 @@ export default function  TeamBid (props) {
                         socket.emit('new-bid',mid,values.bidamt,fname+" "+lname,props.data.player_id,teamid);
                     }else{
                         alert("Amount Must Be Greater than last!");
-                    }
+                  }
+                  
                 }
-
+                const timerCallback = () => {
+                    
+                }
+                console.log(timerTime)
     return (
         <div>
                 
@@ -258,7 +301,7 @@ export default function  TeamBid (props) {
                         </Grid>                       
                       </Grid>
 
-                      <Timer timercall = {timer} maxTime={60} />
+                      {timerTime && <Timer  maxTime={timerTime} callback={timerCallback}/>}
                     
                     <Grid
                     container
@@ -297,26 +340,53 @@ export default function  TeamBid (props) {
                       </Grid>
                       <Chat mid={mid} fname={fname} lname={lname} teamid={teamid} />
 
+
                     <Card
                     sx={{
-                        marginTop:'30px'
+                        display:'flex',
+                        justifyContent:'center',
+                        marginTop:'30px',
+                        width:"500px"
                     }}
-                    >
-                      <Table>
 
+                    >
+                        <TableContainer>
+            { alertMsg &&   
+                      <Table sx={{
+                        widht:'100px'
+                      }}>
+                        <TableHead align="center">
+                            <TableRow align="center">
+                                <TableCell>Bid History</TableCell>
+                                <TableCell></TableCell>
+                            </TableRow>
+                        </TableHead>
                         <TableRow>
-                            <TableCell>
+                            <TableCell colSpan={2} align="center">
                                 TEAM NAME
                             </TableCell>
-                            <TableCell>
+                            <TableCell colSpan={2} align='center'>
                                 BID AMOUNT 
                             </TableCell>
                         </TableRow>
-
+                        
+                            {
+                                BidHistory.map((data)=>{
+                                    console.log(data)
+                                    return(
+                                    <TableRow>
+                                        <TableCell colSpan={2} align="center">{data.name}</TableCell>
+                                        <TableCell colSpan={2} align="center">{data.bidamt}</TableCell>
+                                    </TableRow>
+                                    
+                                    )
+                                })
+                            }
                       </Table>
+                    }
+                      </TableContainer>
                     </Card>
-                </Container>
-        
-     </div>
+                </Container>    
+            </div>
   )
 }

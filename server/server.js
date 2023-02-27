@@ -28,7 +28,94 @@ const conn = mysql.createConnection({
         database: 'auction',
     });
 
-    
+ // socket 
+
+    const Server = app.listen(3001,() => {
+        console.log("Listening on port 3001");
+    });
+
+
+    const io = require('socket.io')(Server,{
+        cors:{
+            origin: "http://localhost:3000",
+        },
+    });
+
+    let chats = {};
+
+    io.on("connection",(socket)=>{
+        console.log(`user connected ${socket.id}`);
+        
+        socket.on("setup",(userData)=>{
+            socket.join(userData);
+            console.log(userData);
+            socket.emit("connected");
+        });
+
+        socket.on("join-auction",(room)=>{
+            socket.join(room);
+            console.log("User Joined Room:" + room);
+        })
+        // socket.on("new-bid",(bidid)=>{
+        //     var bid = bidid;
+        //     if(!bid) return console.log("There not in same auction");
+        //     socket.in(bid).emit("bid-received",getbid);
+        // })
+
+        socket.on('new-bid',(number,obj,name,playerid,teamid)=>{
+            console.log("Auction id:"+ number);
+            console.log(obj);
+            console.log(name)
+            console.log(playerid)
+            conn.query("call inserAuctions(?,?,?,?)",
+        [number,obj,playerid,teamid],
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+        });
+            io.emit('receive-bid',number,obj,name,playerid)
+        })
+
+        
+        socket.on("join-chat",(matchid,teamid)=>{
+            // socket.join(room);
+            console.log(matchid,teamid);
+            if(!chats[matchid]){
+                chats[matchid] = [];
+            }
+            
+        })
+
+        socket.on("chat-typing",(teamid)=>{
+            
+            
+        })
+
+        socket.on("start-auction",(mid,playerid)=>{
+            console.log('auction started:',mid,playerid);
+                    
+            io.emit("auction-stats",mid,playerid)
+        })
+
+        socket.on("send-chat",(msg,mid,fname,lname,teamid) =>{
+            
+            console.log(msg,mid,fname,lname,teamid);
+            conn.query("call insertChat(?,?,?)",
+        [mid,teamid,msg],
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+        });
+
+            io.emit("receive-msg",msg,mid,fname,lname,teamid)
+        })
+
+    });
+
 
 // payment 
 
@@ -150,6 +237,27 @@ const conn = mysql.createConnection({
 
     // getamt
 
+    app.post('/getTime',(req,res)=>{
+
+        const pid = req.body.pid;
+        const mid = req.body.mid;
+        conn.query("call GetLastTime(?,?)",
+        [mid,pid],
+        (err,result) => {
+    
+                if(err){
+                    console.log(err);
+                }
+    
+                else if(result.length > 0 ) {
+                    console.log(result);
+                    res.send(result);
+                }else{
+                    console.log("No data");
+                 }
+                });
+            });
+
     app.post('/getamt',(req,res)=>{
 
         
@@ -160,7 +268,7 @@ const conn = mysql.createConnection({
         (err,result) => {
 
                 if(err){
-                    conosle.log(err);
+                    console.log(err);
                 }
                 else if(result.length > 0 ) {
                     console.log(result);
@@ -452,6 +560,7 @@ const conn = mysql.createConnection({
                         res.send({message:'Account Already Exist!'});
                     }
             });
+            
     });
     
 
@@ -517,6 +626,35 @@ const conn = mysql.createConnection({
         // const value = req.body.value; 
 
         conn.query("call DisplayAuctionByTeam(?,?)",
+            [matchdid,pid],
+                (err,result) => {
+                    //res.send(result)
+                    if(err){ 
+                        console.log(err);
+                    }
+                    else if(result.length > 0){
+                        
+                        res.send(result);
+                        // res.send({message:0}); 
+                    }else{
+                        console.log("Account Already Exist");
+                        res.send({message:'Account Already Exist!'});
+                    }
+            });
+    });
+
+    // pending auction
+
+    app.post('/pendingAuction', (req,res) => {
+
+        
+        const matchdid = req.body.mid;
+        const pid = req.body.pid;
+        // const baseamt = req.body.baseamt;
+        
+        // const value = req.body.value; 
+
+        conn.query("call PendingAuction(?,?)",
             [matchdid,pid],
                 (err,result) => {
                     //res.send(result)
@@ -835,7 +973,7 @@ const conn = mysql.createConnection({
                 if(err){ 
                     console.log(err);
                 }
-                if(result.length > 0){
+                else if(result.length > 0){
                     console.log(result);
                     res.send(result);
                     // res.send({message:0});
@@ -989,11 +1127,10 @@ const conn = mysql.createConnection({
     //
 
     app.post('/AuctionHistory' , (req,res) => {
-        const status = req.body.status;
-        const tbl_name = req.body.tbl_name;
-        const id = req.body.matchid;
-        conn.query("call mactivate(?,?,?)",
-        [status,tbl_name,id],
+        const mid = req.body.mid;
+        const pid = req.body.pid;
+        conn.query("call ActionHsitory(?,?)",
+        [mid,pid],
             (err,result) => {
                 //res.send(result)
                 if(err){ 
@@ -1165,82 +1302,3 @@ const conn = mysql.createConnection({
         });
     });
 
-   const Server = app.listen(3001,() => {
-        console.log("Listening on port 3001");
-    });
-
-
-    const io = require('socket.io')(Server,{
-        cors:{
-            origin: "http://localhost:3000",
-        },
-    });
-
-    let chats = {};
-
-    io.on("connection",(socket)=>{
-        console.log(`user connected ${socket.id}`);
-        
-        socket.on("setup",(userData)=>{
-            socket.join(userData);
-            console.log(userData);
-            socket.emit("connected");
-        });
-
-        socket.on("join-auction",(room)=>{
-            socket.join(room);
-            console.log("User Joined Room:" + room);
-        })
-        // socket.on("new-bid",(bidid)=>{
-        //     var bid = bidid;
-        //     if(!bid) return console.log("There not in same auction");
-        //     socket.in(bid).emit("bid-received",getbid);
-        // })
-
-        socket.on('new-bid',(number,obj,name,playerid,teamid)=>{
-            console.log("Auction id:"+ number);
-            console.log(obj);
-            console.log(name)
-            console.log(playerid)
-            conn.query("call inserAuctions(?,?,?,?)",
-        [number,obj,playerid,teamid],
-            (err,result) => {
-                //res.send(result)
-                if(err){ 
-                    console.log(err);
-                }
-        });
-            io.emit('receive-bid',number,obj,name,playerid)
-        })
-
-        
-        socket.on("join-chat",(matchid,teamid)=>{
-            // socket.join(room);
-            console.log(matchid,teamid);
-            if(!chats[matchid]){
-                chats[matchid] = [];
-            }
-            
-        })
-
-        socket.on("chat-typing",(teamid)=>{
-            
-            
-        })
-
-        socket.on("send-chat",(msg,mid,fname,lname,teamid) =>{
-            
-            console.log(msg,mid,fname,lname,teamid);
-            conn.query("call insertChat(?,?,?)",
-        [mid,teamid,msg],
-            (err,result) => {
-                //res.send(result)
-                if(err){ 
-                    console.log(err);
-                }
-        });
-
-            io.emit("receive-msg",msg,mid,fname,lname,teamid)
-        })
-
-    });

@@ -1,11 +1,13 @@
 import { filter } from 'lodash';
-import Axios from 'axios';
+import axios from 'axios';
+import { sentenceCase } from 'change-case';
 import { useState, useEffect, useRef } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import jsPDF from 'jspdf';
+
+
 
 // material
 import {
@@ -36,11 +38,9 @@ import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user';
 import AddPlayer from './AddPlayer';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-// import requestPost from '../serviceWorker';
+
 // mock
 // import USERLIST from '../_mock/user';
-// import ServiceURL from '../constants/url';
 
 
 // ----------------------------------------------------------------------
@@ -56,7 +56,6 @@ const TABLE_HEAD = [
 ];
 
 // ----------------------------------------------------------------------
-
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -82,66 +81,46 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.player_fname.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || _user.mobile.indexOf(query) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-
 export default function PlayerDisplay() {
   const navigate = useNavigate()
   const ref = useRef(null);
-  const location = useLocation();
-  const reportTemplateRef = useRef(null);
-
-	const handleGeneratePdf = () => {
-		// const doc = new jsPDF({
-		// 	format: 'a4',
-		// 	unit: 'px',
-		// });
-    
-    const doc = new jsPDF();
-
-    // doc.setFont('Inter-Regular', 'normal');
-
-		doc.html(reportTemplateRef.current, {
-			async callback(doc) {
-				await doc.save('Report');
-			},
-		});
-	};
-
-  console.log(location);
 
   const handleClose = () => {
     setDialog();
   };
   const [USERLIST,setUserList] = useState([]);
+  
 
-      const display = () => {
-        let mid = localStorage.getItem("MacthId");
-        Axios.post("http://localhost:3001/playerdisplay",{
-          m_id:mid, 
-        }).then((res) => {
-       if(res){
-          setUserList(res.data[0]);
-       }
-       else{
-        setUserList([]);
-       }
-        }).catch((error) => {
-          console.log(error);
-            console.log('No internet connection found. App is running in offline mode.');
-          });
-      }
+    const display = () => {
+      let mid = localStorage.getItem("MacthId");
+      axios.post("http://localhost:3001/playerdisplay",{
+        m_id:mid, 
+      }).then((res) => {
+     if(res){
+        setUserList(res.data[0]);
+     }
+     else{
+      setUserList([]);
+     }
+      }).catch((error) => {
+        console.log(error);
+          console.log('No internet connection found. App is running in offline mode.');
+        });
+    }
       
   useEffect(() => {
    display();
+
   }, [])
   
-  const [open, setOpen] = useState(true);
-
   const [id, setID] = useState();
+  
+  const [open, setOpen] = useState(true);
 
   const [addDialog, setDialog] = useState();
 
@@ -215,18 +194,14 @@ export default function PlayerDisplay() {
 
  
   const StatusMenu = (prop)=>{
+    console.log(prop);
     const ref = useRef(null)
     const [isOpen, setIsOpen] = useState(false);
-    const StatusMenuclick = () =>{
-      setIsOpen(true)
-      console.log("changed");
-   }
-
     setID(prop.aid);
     // setpusername(prop.Username);
     
     const Activatecall = () =>{
-      Axios.post("http://localhost:3001/activatePlayer",{
+      axios.post("http://localhost:3001/activatePlayer",{
         id:id,
       }).then((res) => {
         console.log(res.data);
@@ -237,7 +212,7 @@ export default function PlayerDisplay() {
      }
 
      const Deactivatecall = () =>{
-      Axios.post("http://localhost:3001/DeactivatePlayer",{
+      axios.post("http://localhost:3001/DeactivatePlayer",{
         id:id,
       }).then((res) => {
         console.log(res.data);
@@ -248,10 +223,7 @@ export default function PlayerDisplay() {
      }
     return(
       <>
-      <IconButton ref={ref} onClick={()=>{
-         StatusMenuclick();
-          console.log("Clicked"+prop.aid);
-          }}>
+      <IconButton ref={ref} onClick={() => setIsOpen(true)}>
         <Iconify icon="eva:more-vertical-fill" width={20} height={20} />
       </IconButton>
       <Menu
@@ -264,19 +236,13 @@ export default function PlayerDisplay() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-         {prop.status !== 0 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{
-         Activatecall();
-          console.log("Activate"+prop.aid);
-          }}>
+         {prop.status !== 0 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{Activatecall();}}>
             <ListItemIcon>
                <Iconify icon="fontisto:radio-btn-active" width={24} height={24} color='#00b300' />
             </ListItemIcon>
             <ListItemText primary="Activate" primaryTypographyProps={{ variant: 'body2' }} />
           </MenuItem>}
-          {prop.status !== 1 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{
-            Deactivatecall();
-            console.log("Deactivate"+prop.aid)
-            }}>
+          {prop.status !== 1 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{Deactivatecall();}}>
             <ListItemIcon>
                <Iconify icon="el:remove-circle" width={24} height={24}  color='#cc2900'/>
             </ListItemIcon>
@@ -294,7 +260,7 @@ export default function PlayerDisplay() {
 
 
   return (
-    <Page title="Players">
+    <Page title="Player">
       <Container maxWidth="xl">
       {addDialog}
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -302,24 +268,17 @@ export default function PlayerDisplay() {
             Player
           </Typography>
           <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Player
+          New Player
           </Button>
         </Stack>
-        <Stack>
-          <IconButton
-          onClick={handleGeneratePdf}
-          >
-          <PictureAsPdfIcon />
-          </IconButton>
-        </Stack>
+
         <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)
         localStorage.removeItem("MacthId");
         }} />
-        <div ref={reportTemplateRef}>
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
-            <TableContainer  sx={{ minWidth: 800 }}>
+            <TableContainer sx={{ minWidth: 800 }}>
               <Table>
                 <UserListHead
                   order={order}
@@ -332,11 +291,11 @@ export default function PlayerDisplay() {
                 />
                 <TableBody>
                   {filteredUsers && filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                   const {player_id , username , player_fname, Player_lname,Player_no,player_img,pos_id,match_id,pstatus,Password } = row;
+                    const {player_id , username , player_fname, Player_lname,Player_no,player_img,pos_id,match_id,L_Status,Password } = row;
                    // const selectedUser = selected.indexOf(FName + Lname) !== -1;
                    let stst = 'Active'
                   
-                   if(pstatus === 1){
+                   if(L_Status === 1){
                      stst = 'InActive'
                    }
                    
@@ -363,14 +322,14 @@ export default function PlayerDisplay() {
                           </TableCell>
   
                           <TableCell align="left">
-                          <Label  color={pstatus ? 'error' : 'success'}>
+                          <Label  color={L_Status ? 'error' : 'success'}>
                             {stst}
                           </Label>
                         </TableCell>
   
 
                         <TableCell align="right" >
-                        <StatusMenu ref={ref}  status={pstatus} aid={player_id} row={row} />
+                        <StatusMenu ref={ref}  status={L_Status} aid={player_id} row={row} />
                         </TableCell>
                       </TableRow>
                     );
@@ -405,7 +364,6 @@ export default function PlayerDisplay() {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
-        </div>
       </Container>
     </Page>
   );

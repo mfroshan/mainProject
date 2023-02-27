@@ -16,10 +16,6 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 export default function AddHost(details) {
 
-  console.log(details.data);
-
-  
-
 
   const [ base64value , setBase64value] = useState(''); 
 
@@ -65,7 +61,7 @@ export default function AddHost(details) {
   });
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
-  
+  console.log(formik);
 
   const handleFileUpload =  async (e) => {
     const filename = e.target.files[0];
@@ -112,6 +108,7 @@ const UpdateHost = () => {
     console.log(values.fname);
     console.log(values.lname);
     console.log(values.Mobnum);
+    console.log(details.data.host_id);
       
 
     Axios.post("http://localhost:3001/HostUpdate", {
@@ -121,7 +118,7 @@ const UpdateHost = () => {
       fname: values.fname,
       lname: values.lname,
       phoneNo:values.Mobnum,
-  
+      id:details.data.host_id,
       
     }).then((response) =>{
       console.log(response.data[0][0]);
@@ -155,31 +152,35 @@ const UpdateHost = () => {
     password: values.password,
     fname: values.fname,
     lname: values.lname,
-    base64v:base64value,
+    base64v: base64value,
     phoneNo:values.Mobnum,
     
     
   }).then((response) =>{
     console.log(response.data[0][0]);
     if(response.data[0][0].status === 0){        
-        //navigate('/',{replace:true});
+      
     }
     else{
       console.log(response.data[0][0].msg)
-      // showToastMsgFail();
+      
      }
     }).catch(() => {
       console.log('No internet connection found. App is running in offline mode.');
     });
   }
 
-    if(update){
-        UpdateHost();
+    if(!update){
+      insertHost();
+        
     }else{
-        insertHost();
+      UpdateHost();
     }
+    
     details.submit();
-    alertTimeOut();
+    alertTimeOut(()=>{
+
+    },10000);
   };
 
 
@@ -195,14 +196,16 @@ const UpdateHost = () => {
 
   const checkEmail = async () => {
     console.log(values.username)
-    let res = await Axios.post("http://localhost:3001/checkEmail",{email: values.username});
-    let status = res.data[0][0].status;
+    if(values.username !== details.data.username){
+      let res = await Axios.post("http://localhost:3001/checkEmail",{email: values.username});
+      let status = res.data[0][0].status;
+      if(status){
+        alert("Account exists");
+        document.getElementById("Username").value = '';
   
-    if(status){
-      document.getElementById("Username").value = '';
-      alert("Account exists");
-    }
-  }
+      }
+    }  
+  };
 
   return (
     <div>
@@ -223,21 +226,6 @@ const UpdateHost = () => {
         <Container maxWidth="sm">
           <Stack spacing={1} justifyContent="space-between" sx={{ my: 3 }}>
             <Typography variant="h4">Host DETAILS</Typography>
-            
-            {/* { update && 
-            <>
-            <center>
-                  <Avatar
-                  alt="Player Image"
-                  src={details.data.player_img}
-                  sx={{ 
-                    width: 150, 
-                    height: 150,
-                 }}
-                />
-            </center>
-            </>  
-            }  */}
             <TextField
               fullWidth
               type="text"
@@ -268,15 +256,8 @@ const UpdateHost = () => {
               autoComplete
               error={Boolean(touched.username && errors.username)}
               helperText={touched.username && errors.username}
-              onBlur={()=>{
-                checkEmail();
-               }
-              }
+              
             />
-
-            
-
-            
 
         {!update && <label htmlFor="icon-button-file" >
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
@@ -298,13 +279,22 @@ const UpdateHost = () => {
        
       </label>
       }
+      <TextField
+              fullWidth
+              type="number" 
+              label="Phone Number"
+              variant="outlined"
+              {...getFieldProps('Mobnum')}
+              error={Boolean(touched.Mobnum && errors.Mobnum)}
+              helperText={touched.Mobnum && errors.Mobnum}
+            />
+
 
         <TextField
               fullWidth
               type="password" 
               label="Password"
               variant="outlined"
-              value={details.update ? details.data.Mobnum : ''}
               {...getFieldProps('password')}
               error={Boolean(touched.password && errors.password)}
               helperText={touched.password && errors.password}

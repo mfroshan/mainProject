@@ -8,8 +8,9 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Axios from 'axios';
+import io from 'socket.io-client';
 
-
+var socket;
 
 export default function  PlayerProfile () {
   
@@ -50,6 +51,12 @@ export default function  PlayerProfile () {
 
       useEffect(() => {
         display()
+
+        socket = io('http://localhost:3001')      
+      
+    
+      
+
       }, [])
 
 
@@ -79,6 +86,7 @@ export default function  PlayerProfile () {
 
       const addAuction = () => {
 
+            
             let matchid = localStorage.getItem('MatchID');
             let posid = localStorage.getItem('pos_id');
 
@@ -90,11 +98,16 @@ export default function  PlayerProfile () {
           }).then((res) => {
             console.log(res.data[0][0])
             if (res.data[0][0].status === 1) {
+
+            socket.emit("start-auction",matchid,player_id);
+            
                 navigate('/dashboard/auctiondisplay',{state:
                 {
                     mid:matchid
                 }
+
             });
+                
             }
           })
        

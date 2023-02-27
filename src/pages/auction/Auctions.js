@@ -1,13 +1,12 @@
 import React,{ useState ,useEffect } from 'react'
 import { Grid, Container, Stack, Typography, Card,TextField ,Button} from '@mui/material';
 import CardMedia from '@mui/material/CardMedia';
-import Paper from '@mui/material/Paper';
 import Item from '@mui/material/ListItem';
 import CardContent from '@mui/material/CardContent';
 import Timer from './Timer';
-import EditIcon from '@mui/icons-material/Edit';
 import Axios from 'axios';
 import io from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 var socket;
 
@@ -22,6 +21,8 @@ export const Auctions = (props) => {
     const [ auctionValue ,setAuction ] = useState([]);
 
     const  mid = localStorage.getItem("mid");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -50,6 +51,40 @@ export const Auctions = (props) => {
       
     }, [])
     
+    const timerCallback = () => {
+
+        const mid = props.data.match_id;
+        const pid = props.data.player_id;
+        Axios.post("http://localhost:3001/pendingAuction",{
+          mid:mid,
+          pid:pid,
+        }).then((res) => {
+       if(res.data[0][0]){
+          console.log(res.data[0][0]);
+          
+       }
+       else{
+        
+        
+       }
+        }).catch((error) => {
+          console.log(error);
+            console.log('No internet connection found. App is running in offline mode.');
+          });
+          
+          socket.emit("start-auction",mid,pid)
+
+          navigate('/dashboard/bidsetup',{
+            state:{
+                mid:localStorage.getItem("mid")
+            }
+            
+        });
+       
+      }
+
+        
+    
 
   return (
          <Container maxWidth="xl">
@@ -58,7 +93,7 @@ export const Auctions = (props) => {
                     </Typography>
 
                                         
-                    <Timer />
+                    <Timer maxTime={20} callback={timerCallback} />
                     
                     <Grid container
                      direction="column"

@@ -4,23 +4,21 @@ import {Typography } from '@mui/material';
 
  const  Timer = (props) => {
     
-    const [ time, setTime] = useState("60");
-
-    console.log(props.timercall);
-
-    let maxTime = props.maxTime;
-
-    
-let timer;
-
+    const [ time, setTime] = useState("");
+    const [colur,setcolur]= useState("orange");
+    let maxTime = 0;    
+    var timer;
     const timeChange = () => {
         maxTime--;
-        if(maxTime !==0 && maxTime >=0){
-            setTime(maxTime);
+        if(maxTime< 10){
+            setcolur("red");
+        }
+        if(maxTime<=0 ){
+            setTime("0")
+            clearInterval(timer);
+            props.callback();
         }else{
-            
-            setTime('60');
-            window.location.reload();
+            setTime(maxTime);
         }
   };
 
@@ -33,17 +31,15 @@ let timer;
             
                 
            
-        // timer = setInterval(timeChange,1000);    
-          
-            
+         timer = setInterval(timeChange,1000);    
        },[])
   
   return (
         <Typography
-                    variant='h4'
+                    variant='h5'
                     sx={{
                         float:'right',
-                        color:'orange'
+                        color:`${colur}`
                     }}
                         >
                       TIME LEFT:  {`${time} sec`}

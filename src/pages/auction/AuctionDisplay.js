@@ -52,20 +52,7 @@ export default function AuctionDisplay () {
         display()
         
       }, [])
-      
-      
-      console.log(alertMsg);
-      
            
-      
-      
-      
-        
-      
-
-      // setInterval(auction,1000);
-        
-        
       const StatusMenu = (props) => {
         return(
             <>
