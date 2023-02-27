@@ -55,18 +55,7 @@ export default function TeamRegister() {
   
   const [data,setData] = useState([]);
 
-  const Display = () => {
-    console.log(data);
-      if(data === 0){
-        return(
-          <TeamReg />
-        )
-      }else{
-        return(
-          "Registration Closed!"
-        )
-      }
-   }
+ 
   
 
  const getStatus = () => {
@@ -91,7 +80,19 @@ export default function TeamRegister() {
    getStatus()
  }, [])
  
-
+ const Display = () => {
+  console.log(data);
+    if(data===0){
+      return(
+        <TeamReg />
+      )
+    }else{
+      return(
+        "Registration Closed!"
+      )
+    }
+ }
+ 
   return (
     <>
       <Helmet>
@@ -149,8 +150,11 @@ export default function TeamRegister() {
             </Divider>
             
              {/* <TeamReg /> */}
-             { Display() } 
+          
+             
+              <TeamReg />
 
+            
           </StyledContent>
         </Container>
       </StyledRoot>

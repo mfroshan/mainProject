@@ -170,6 +170,28 @@ const conn = mysql.createConnection({
                 });
             });
 
+   // check balance bid amount 
+
+   app.post('/getBalanceBidAmount',(req,res)=>{
+
+    const mid = req.body.mid;
+    const tid = req.body.tid;
+    conn.query("call GetBidAmount(?,?)",
+    [mid,tid],
+    (err,result) => {
+
+            if(err){
+                conosle.log(err);
+            }
+
+            if(result.length > 0 ) {
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data");
+             }
+            });
+        });
 
    // bidStatus
 

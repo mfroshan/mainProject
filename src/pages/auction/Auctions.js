@@ -31,8 +31,8 @@ export const Auctions = (props) => {
         const cDate = new Date();
         const lDate = new Date(times);
         const fSec = cDate.getTime() - lDate.getTime();
-        setTimertime(20-Math.floor(fSec/1000));
-        console.log(20-Math.floor(fSec/1000));
+        setTimertime(60-Math.floor(fSec/1000));
+        console.log(60-Math.floor(fSec/1000));
     }
     const timerSetting = ()=>{
         Axios.post("http://localhost:3001/getTime",{
@@ -110,6 +110,7 @@ export const Auctions = (props) => {
             }
             
         });
+
        
       }
 

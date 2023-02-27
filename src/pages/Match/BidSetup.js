@@ -58,9 +58,24 @@ export default function BidSetup() {
 
   const [pendingstat, setpendingstat] = useState(false);
 
+  const [msg,setMsg] = useState('');
+
   const mid = localStorage.getItem("MatchID");
 
-
+  const Auctioncheck = () => {
+    axios.post("http://localhost:3001/AuctionCheck",{
+      mid: mid,
+    }).then((res) => {
+   if(res.data[0]){
+    console.log("Auction:"+res.data[0][0].msg)
+      setMsg(res.data[0][0].msg);
+    }
+    }).catch((error) => {
+      console.log(error);
+        console.log('No internet connection found. App is running in offline mode.');
+      });
+  }
+  
       const getcount = () => {
         axios.post("http://localhost:3001/getCount",{
           mid:mid
@@ -111,6 +126,7 @@ export default function BidSetup() {
 
   useEffect(() => {
    getcount()
+   Auctioncheck()
   }, [])
   
 
@@ -135,7 +151,7 @@ export default function BidSetup() {
         boxShadow: 0,
         textAlign: 'center',
         color: (theme) => theme.palette["primary"].darker,
-        bgcolor: (theme) => theme.palette["primary"].lighter,
+        bgcolor: '#FCAE3E',
 
       }}
     >
@@ -143,7 +159,7 @@ export default function BidSetup() {
         sx={{
           color: (theme) => theme.palette["primary"].dark,
           backgroundImage: (theme) =>
-            `linear-gradient(135deg, ${alpha(theme.palette["primary"].dark, 0)} 0%, ${alpha(
+            `linear-gradient(135deg, ${alpha('#FCAE1E', 0)} 0%, ${alpha(
               theme.palette["primary"].dark,
               0.24
             )} 100%)`,
@@ -188,7 +204,7 @@ export default function BidSetup() {
   }
    </Grid>
 
-{  !Status &&
+{  Status===false &&
           <div>
               <Typography
               variant='h4'
@@ -197,7 +213,7 @@ export default function BidSetup() {
                 justifyContent:'center'
               }}
               >
-                  Player Havent Registered!
+                  {msg}
               </Typography>
           </div>
 }

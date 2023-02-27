@@ -17,14 +17,30 @@ export default function AuctionDisplay () {
 
     // console.log(location);
 
+    
+
     localStorage.setItem("mid",location.state.mid);
 
     const [alertMsg, setAlert] = useState(false);
 
-    
+    const [msg,setMsg] = useState('');
 
     const [ player, setPlayer]  = useState([]);
    
+    const Auctioncheck = () => {
+      const mid = localStorage.getItem("mid");
+      axios.post("http://localhost:3001/AuctionCheck",{
+        mid: mid,
+      }).then((res) => {
+     if(res.data[0]){
+      console.log("Auction:"+res.data[0][0].msg)
+        setMsg(res.data[0][0].msg);
+      }
+      }).catch((error) => {
+        console.log(error);
+          console.log('No internet connection found. App is running in offline mode.');
+        });
+    }
     
     
     const display = () => {
@@ -50,7 +66,7 @@ export default function AuctionDisplay () {
 
       useEffect(() => {
         display()
-        
+        Auctioncheck()
       }, [])
            
       const StatusMenu = (props) => {
@@ -74,7 +90,7 @@ export default function AuctionDisplay () {
                     marginTop:'200px'
                   }}
                   >
-                      Auctions is Not Yet Started !
+                     {msg}
                   </Typography>
                   </div>
               }

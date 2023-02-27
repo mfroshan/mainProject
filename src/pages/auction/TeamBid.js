@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react';
-import { Grid, Container, Stack, Typography, Card,TextField ,Button, CardContent, TableRow, TableCell, Table} from '@mui/material';
+import { Grid, Container, Stack, Typography, Card,TextField ,Button, CardContent, TableRow, TableCell, Table, Snackbar} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useState,useEffect} from 'react';
 import { useLocation,useNavigate } from 'react-router-dom';
@@ -26,6 +26,7 @@ export default function  TeamBid (props) {
     const navigate = useNavigate();
     
     const [alertMsg, setAlert] = useState(false);
+    const [msg, setMsg] = useState("");
 
     const [bidamt, setbidAmt] = useState(false);
 
@@ -42,8 +43,10 @@ export default function  TeamBid (props) {
     const [timerTime, setTimertime] = useState();
 
     const [biStatus,setBistatus] = useState();
+
+    const [biamountLeft,setbidamountLeft] = useState();
    
-      var bidamountleft = localStorage.getItem("bidAmt-left");
+      
       
       const Auctioncheck = () => {
 
@@ -65,12 +68,28 @@ export default function  TeamBid (props) {
         const  fname = localStorage.getItem("fname");
         const lname = localStorage.getItem("lname");
 
+        const BalanceBidAmount = () =>{
+            axios.post("http://localhost:3001/getBalanceBidAmount",{
+                mid: mid,
+                tid:teamid,
+              }).then((res) => {
+             if(res.data[0]){
+                console.log(res.data[0][0].amount);
+                setbidamountLeft(res.data[0][0].amount);
+                }
+              }).catch((error) => {
+                console.log(error);
+                  console.log('No internet connection found. App is running in offline mode.');
+                });
+          }
+        
+
         const timeCalculate = (times)=>{
             const cDate = new Date();
             const lDate = new Date(times);
             const fSec = cDate.getTime() - lDate.getTime();
-            setTimertime(20-Math.floor(fSec/1000));
-            console.log(20-Math.floor(fSec/1000));
+            setTimertime(60-Math.floor(fSec/1000));
+            console.log(60-Math.floor(fSec/1000));
         }
         const timerSetting = ()=>{
             axios.post("http://localhost:3001/getTime",{
@@ -78,10 +97,7 @@ export default function  TeamBid (props) {
               pid:props.data.player_id,
             }).then((res) => {
            if(res.data[0]){
-            // console.log(res.data)
-            //setTimertime(res.data[0][0].last_time)
-            timeCalculate(res.data[0][0].last_time)
-           // console.log(res.data[0][0].last_time);
+            timeCalculate(res.data[0][0].last_time);
               }
             }).catch((error) => {
               console.log(error);
@@ -117,6 +133,8 @@ export default function  TeamBid (props) {
             AuctionHistory()
             timerSetting()
             Auctioncheck()
+            BalanceBidAmount()
+
       socket = io('http://localhost:3001') 
      
       
@@ -135,16 +153,13 @@ export default function  TeamBid (props) {
         console.log(name);
         console.log(playerid);
 
-        
-
+    
         if(mid===number){
             lastAmt(obj);
             console.log(amt);
             setdisplayName(name);
         }
        })
-
-       
         
       }, [])
 
@@ -171,15 +186,11 @@ export default function  TeamBid (props) {
       
 
       const bidamtCheck = () => {
-        if( values.bidamt < props.data.baseamt){
-            alert("Price should be Higher");
+        if( values.bidamt < props.data.baseamt || values.bidamt > biamountLeft){
+            setMsg("Price should be Higher");
             setbidAmt(true);
         }else{
             setbidAmt(false);
-            if(BidHistory.length > 0){
-                console.log("BidHistory:"+BidHistory[0].bidamt);
-            }
-           
         }
   }
 
@@ -187,22 +198,24 @@ export default function  TeamBid (props) {
                     if(values.bidamt > amt){
                         socket.emit('new-bid',mid,values.bidamt,fname+" "+lname,props.data.player_id,teamid);
                     }else{
-                        alert("Amount Must Be Greater than last!");
+                        setMsg("Amount Must Be Greater than last Bid!");
                   }
                   
                 }
                 const timerCallback = () => {
-                    if(biStatus===1){
-                        props.display('Please Wait For Players!');
-                    }else{
-                        props.display('Auction Has Finished!');
-                    }
+                    
                     
                 }
 
                 console.log(timerTime)
     return (
         <div>
+            <Snackbar
+  open={bidamt}
+  autoHideDuration={6000}
+  onClose={()=>{}}
+  message={msg}
+/>
                 
                <Container maxWidth="xl">
                     <Typography variant="h4" sx={{ mb: 5 }}>
@@ -219,7 +232,7 @@ export default function  TeamBid (props) {
                         <Typography
                         variant="h5"
                         >
-                            Total Bid Amount: {bidamountleft}
+                            Total Bid Amount: {biamountLeft}
                         </Typography>
                     
                     </Paper> 
@@ -309,7 +322,7 @@ export default function  TeamBid (props) {
                         {...getFieldProps('bidamt')}
                         error={Boolean(touched.bidamt && errors.bidamt)}
                         helperText={touched.bitamt && errors.bidamt}
-                        onBlur={()=>{
+                        onPointerMove={()=>{
                             bidamtCheck()
                         }}
                         />
@@ -373,7 +386,7 @@ export default function  TeamBid (props) {
 
                     >
                         <TableContainer>
-            { alertMsg &&   
+            { !alertMsg &&   
                       <Table sx={{
                         widht:'100px'
                       }}>

@@ -153,20 +153,20 @@ export default function AdminViewMatches() {
 
   const isUserNotFound = filteredUsers.length === 0;
 
-  const StatusMenu = (porps) => {
+  const StatusMenu = (props) => {
     
     return(
       <>
     {
       
-      porps.bstatus===0 &&
+      props.bstatus===0 &&
       <Button
       variant='contained'
       onClick={()=>{
           navigate('/dashboard/auctiondisplay',
           { state:
             {
-              mid : porps.matchid,
+              mid : props.matchid,
             }
           })
         }}
@@ -174,9 +174,15 @@ export default function AdminViewMatches() {
       </Button>
     }
     {
-      porps.bstatus===1 &&
+      props.bstatus===1 &&
         <Button
         variant='contained'
+        onClick={()=>{
+          console.log('Auction Details');  
+          navigate('/dashboard/auctiondetails',{state:{
+            mid : props.matchid,
+          }})        
+        }}
         >
           Auction Details
         </Button>
