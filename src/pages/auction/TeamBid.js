@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react';
-import { Grid, Container, Stack, Typography, Card,TextField ,Button, CardContent, TableRow, TableCell, Table, Snackbar} from '@mui/material';
+import { Grid, Container, Stack, Typography, Card,TextField ,Button, CardContent, TableRow, TableCell, Table, Snackbar,Alert} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useState,useEffect} from 'react';
 import { useLocation,useNavigate } from 'react-router-dom';
@@ -187,7 +187,7 @@ export default function  TeamBid (props) {
 
       const bidamtCheck = () => {
         if( values.bidamt < props.data.baseamt || values.bidamt > biamountLeft){
-            setMsg("Price should be Higher");
+            setMsg("Bid Amount should be Higher");
             setbidAmt(true);
         }else{
             setbidAmt(false);
@@ -210,13 +210,15 @@ export default function  TeamBid (props) {
                 console.log(timerTime)
     return (
         <div>
-            <Snackbar
-  open={bidamt}
-  autoHideDuration={6000}
-  onClose={()=>{}}
-  message={msg}
-/>
-                
+                        <Snackbar
+                          open={bidamt}
+                          autoHideDuration={6000}
+                          onClose={()=>{}}
+                          
+                        >
+                         <Alert severity="error">{msg}</Alert> 
+                          </Snackbar>
+                            
                <Container maxWidth="xl">
                     <Typography variant="h4" sx={{ mb: 5 }}>
                         Auction Details

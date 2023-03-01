@@ -6,6 +6,8 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 
 
@@ -36,7 +38,7 @@ import Label from '../../components/label';
 import Scrollbar from '../../components/Scrollbar';
 import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user';
+import { UserListHead, UserListToolbar} from '../../sections/@dashboard/user';
 import AddPlayer from './AddPlayer';
 
 // mock
@@ -151,6 +153,67 @@ export default function PlayerDisplay() {
     setSelected([]);
   };
 
+
+  const genereatePdf = () => {
+
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+    
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+    
+    
+    const title = "Players Details";
+    const headers = [[
+      "FirstName", 
+      "LastName",
+      "Username",
+      "Phone No",
+    ]];
+    
+    const data = USERLIST.map(data=> [
+      data.player_fname, 
+      data.Player_lname,
+      data.username,
+      data.Player_no
+    
+    ]);
+
+    var today = new Date();
+    var dd = today.getDate();
+    
+    var mm = today.getMonth()+1; 
+    var yyyy = today.getFullYear();
+    if(dd<10) 
+    {
+        dd='0'+dd;
+    } 
+    
+    if(mm<10) 
+    {
+        mm='0'+mm;
+    } 
+    today = mm+'-'+dd+'-'+yyyy;
+
+    var newdat = "Date of Report Generated  : "+ today;
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data
+    };
+    
+    doc.text(title, marginLeft, 20);
+    doc.autoTable(content);
+
+    doc.setFontSize(10);
+    doc.text(40, 35, "Match Name:"+ USERLIST[0].match_fname+" "+USERLIST[0].match_lname)
+
+    doc.setFontSize(10);
+    doc.text(40, 45, newdat)
+        doc.save('Player Details.pdf')
+      }
   
 
   const handleAdd = (e, upd = Boolean(false), button = 'ADD', data = {}) => {
@@ -273,9 +336,15 @@ export default function PlayerDisplay() {
         </Stack>
 
         <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)
-        localStorage.removeItem("MacthId");
         }} />
         <Card>
+        <IconButton
+          sx={{
+            float:'right',
+            marginLeft:'30px'
+          }}
+          onClick = {genereatePdf}
+          ><Iconify icon="prime:file-pdf" width={40} height={40} /></IconButton>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>

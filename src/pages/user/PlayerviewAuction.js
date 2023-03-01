@@ -5,8 +5,8 @@ import Paper from '@mui/material/Paper';
 import Item from '@mui/material/ListItem';
 import CardContent from '@mui/material/CardContent';
 // import Timer from './Timer';
-import EditIcon from '@mui/icons-material/Edit';
-import Axios from 'axios';
+
+import axios from 'axios';
 import io from 'socket.io-client';
 
 var socket;
@@ -21,11 +21,36 @@ export const PlayerViewAuction = (props) => {
 
     const [ auctionValue ,setAuction ] = useState([]);
 
+    const [timerTime, setTimertime] = useState();
+
     const  mid = localStorage.getItem("mid");
 
     
+    const timeCalculate = (times)=>{
+        const cDate = new Date();
+        const lDate = new Date(times);
+        const fSec = cDate.getTime() - lDate.getTime();
+        setTimertime(60-Math.floor(fSec/1000));
+        console.log(60-Math.floor(fSec/1000));
+    }
+    const timerSetting = ()=>{
+        axios.post("http://localhost:3001/getTime",{
+          mid: mid,
+          pid:props.data.player_id,
+        }).then((res) => {
+       if(res.data[0]){
+        timeCalculate(res.data[0][0].last_time);
+          }
+        }).catch((error) => {
+          console.log(error);
+            console.log('No internet connection found. App is running in offline mode.');
+          });
+    }
+
 
     useEffect(() => {
+
+        timerSetting()
 
     socket = io('http://localhost:3001')      
       
@@ -42,7 +67,6 @@ export const PlayerViewAuction = (props) => {
         console.log(playerid);
 
         
-
         if(mid===number){
             lastAmt(obj);
             console.log(amt);

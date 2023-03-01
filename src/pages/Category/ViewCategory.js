@@ -1,11 +1,8 @@
 import { filter } from 'lodash';
 import axios from 'axios';
-import { sentenceCase } from 'change-case';
 import { useState, useEffect, useRef } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 
 
@@ -18,9 +15,7 @@ import {
   Card,
   Table,
   Stack,
-  Avatar,
   Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -31,33 +26,30 @@ import {
 } from '@mui/material';
 
 // components
-import Page from '../components/Page';
-import Label from '../components/label';
-import Scrollbar from '../components/Scrollbar';
-import Iconify from '../components/iconify';
-import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
-import AddHost from './AddHost';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-
+import Page from '../../components/Page';
+// import Label from '../../components/label';
+import Scrollbar from '../../components/Scrollbar';
+import Iconify from '../../components/iconify';
+import SearchNotFound from '../../components/SearchNotFound';
+import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import AddCat from './AddCat';
+// import requestPost from '../serviceWorker';
 // mock
 // import USERLIST from '../_mock/user';
+// import ServiceURL from '../constants/url';
 
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'fname', label: 'Team Fname', alignRight: false },
-  { id: 'lname', label: 'Team Lname', alignRight: false },
-  { id: 'username', label: 'Username', alignRight: false },
-  { id: 'PhoneNo', label: 'Phone Number', alignRight: false },
-  { id: 'Image', label: 'Image', alignRight: false },
-  { id: 'Status', label: 'Status', alignRight: false },
-  { id: '' },
+  { id: '' ,alignRight: false},
+  { id: 'catName', label: 'Category Name', alignRight: false },
+  { id: '' ,alignRight: false},
 ];
 
 // ----------------------------------------------------------------------
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -83,12 +75,13 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || _user.mobile.indexOf(query) !== -1);
+    return filter(array, (_user) => _user.cat_name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserPage() {
+
+export default function ViewCategory() {
   const navigate = useNavigate()
   const ref = useRef(null);
 
@@ -97,16 +90,14 @@ export default function UserPage() {
   };
   const [USERLIST,setUserList] = useState([]);
   
-      const display = () =>{
-        axios.post("http://localhost:3001/hostdisplay",{
+  const location = useLocation();
+    
+     
+      const display = () => {
+        axios.post("http://localhost:3001/getCat",{
         }).then((res) => {
-       if(res.data[0]){
-        console.log(res.data)
-          setUserList(res.data[0]);
-       }
-       else{
-        setUserList([]);
-       }
+          console.log(res.data);
+          setUserList(res.data);
         }).catch((error) => {
           console.log(error);
             console.log('No internet connection found. App is running in offline mode.');
@@ -118,6 +109,8 @@ export default function UserPage() {
   }, [])
   
   const [open, setOpen] = useState(true);
+
+  
 
   const [addDialog, setDialog] = useState();
 
@@ -148,76 +141,14 @@ export default function UserPage() {
     setSelected([]);
   };
 
-  const genereatePdf = () => {
-
-    const unit = "pt";
-    const size = "A4"; 
-    const orientation = "portrait"; 
-  
-  const marginLeft = 40;
-  const doc = new jsPDF(orientation, unit, size);
-  
-  
-  const title = "Host Details";
-  const headers = [[
-    "FirstName", 
-    "LastName",
-    "Username",
-    "Phone No",
-  ]];
-  
-  const data = USERLIST.map(data=> [
-    data.host_fname, 
-    data.host_lname,
-    data.Username,
-    data.HPhone_No
-  ]);
-  var today = new Date();
-  var dd = today.getDate();
-  
-  var mm = today.getMonth()+1; 
-  var yyyy = today.getFullYear();
-  if(dd<10) 
-  {
-      dd='0'+dd;
-  } 
-  
-  if(mm<10) 
-  {
-      mm='0'+mm;
-  } 
-  today = mm+'-'+dd+'-'+yyyy;
-  
-  var newdat = "Date of Report Generated  : "+ today;
-  
-  
-  
-  let content = {
-    startY: 50,
-    head: headers,
-    body: data
-  };
-  
-      doc.text(title, marginLeft, 20);
-      doc.autoTable(content);
-  
-      doc.setFontSize(10);
-      doc.text(40, 40, newdat)
-  
-      doc.save('HostDetails.pdf')
-    }
-  
-  
-
   const handleAdd = (e, upd = Boolean(false), button = 'ADD', data = {}) => {
-    const add = (data) => {
+    const add = () => {
       setOpen(false) ;
       setDialog();
       display();
     };
-
     setDialog(() => (
-      <AddHost
+      <AddCat
         onClose={handleClose}
         open={open}
          submit={add}
@@ -251,21 +182,17 @@ export default function UserPage() {
 
  
   const StatusMenu = (prop)=>{
-    
     const ref = useRef(null)
     const [isOpen, setIsOpen] = useState(false);
-    const spcall = (status)=>{
-      axios.post("http://localhost:3001/HostStatus",{
-        id:  prop.aid,
-        status: status,
+    const dl = ()=>{
+      axios.post("http://localhost:3001/delCat",{
+        pos_id: prop.aid,
       }).then((res) => {
-        console.log(res.data);
          display();
           }).catch(() => {
               console.log('No internet connection found. App is running in offline mode.');
-          });
+        })
      }
-     
     return(
       <>
       <IconButton ref={ref} onClick={() => setIsOpen(true)}>
@@ -281,53 +208,41 @@ export default function UserPage() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-         {prop.status !== 0 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{spcall(1)}}>
-            <ListItemIcon>
-               <Iconify icon="fontisto:radio-btn-active" width={24} height={24} color='#00b300' />
-            </ListItemIcon>
-            <ListItemText primary="Activate" primaryTypographyProps={{ variant: 'body2' }} />
-          </MenuItem>}
-          {prop.status !== 1 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{spcall(0)}}>
-            <ListItemIcon>
-               <Iconify icon="el:remove-circle" width={24} height={24}  color='#cc2900'/>
-            </ListItemIcon>
-            <ListItemText primary="Deactivate" primaryTypographyProps={{ variant: 'body2' }} />
-          </MenuItem>}
           <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:edit-fill" width={24} height={24} />
           </ListItemIcon>
           <ListItemText onClick={(e)=>handleAdd(e,true,'EDIT',prop.row)} primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
-        </Menu></>);
+        <MenuItem sx={{ color: 'text.secondary' }} onClick={() => {
+            console.log("Clicked:"+prop.aid);
+            dl();
+      }}>
+            <ListItemIcon>
+               <Iconify icon="el:remove-circle" width={24} height={24}  color='#cc2900'/>
+            </ListItemIcon>
+            <ListItemText primary="Remove" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>
+        </Menu>
+        </>);
   }
 
 
 
   return (
-    <Page title="Host">
+    <Page title="Category">
       <Container maxWidth="xl">
       {addDialog}
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Host
+            Category
           </Typography>
           <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Host
+            New Category
           </Button>
         </Stack>
-
-        
+        <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
         <Card>
-          <IconButton
-
-              sx={{
-                float:'right',
-                marginLeft:'30px'
-              }}
-              onClick = {genereatePdf}
-              ><Iconify icon="prime:file-pdf" width={30} height={30} /></IconButton>
-
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -343,47 +258,24 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers && filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const {host_id, host_fname, host_lname, Username,hostImage,HPhone_No,L_Status } = row;
-                   // const selectedUser = selected.indexOf(FName + Lname) !== -1;
-                   let stst = 'Active'
-                  
-                   if(L_Status === 1){
-                     stst = 'InActive'
-                   }
-                   
+                    const { cat_id,	cat_name} = row;  
+                        
                     return (
-                      <TableRow>                      
-                        <TableCell component="th" scope="row" >
-                            <Typography variant="h6" >
-                              {host_fname}
-                            </Typography>
+                      <TableRow key={cat_id}>                      
+                        
+                        <TableCell align='left'>
+                              
                         </TableCell>
-                        <TableCell component="th" scope="row" >
-                            <Typography variant="h6" >
-                              {host_lname}
-                            </Typography>
-                        </TableCell>
-                        <TableCell align="left">{Username}</TableCell>
-                          <TableCell align="left">{HPhone_No}</TableCell>
-                          <TableCell align="left" style={{    
-                            height: "250px",width: "250px"
-                          }}>
-                            
-                            <img src= {hostImage} alt="PlayerImages"/>
-                            
-                          </TableCell>
-  
-                          <TableCell align="left">
-                          <Label  color={L_Status ? 'error' : 'success'}>
-                            {stst}
-                          </Label>
+                        <TableCell align='left'>
+                              {cat_name}
                         </TableCell>
 
                         <TableCell align="right" >
-                        <StatusMenu ref={ref}  status={L_Status} aid={host_id} row={row} />
+                        <StatusMenu key={cat_id}  ref={ref} aid={cat_id} row={row} />
                         </TableCell>
                       </TableRow>
                     );
+                   
                   })}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>

@@ -34,9 +34,12 @@ import Label from '../../components/label';
 import Scrollbar from '../../components/Scrollbar';
 import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user';
+import { UserListHead, UserListToolbar } from '../../sections/@dashboard/user';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 
+let head = [];
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -46,8 +49,8 @@ const TABLE_HEAD = [
   { id: 'phno', label: 'Phone Number', alignRight: false },
   { id: 'Image', label: 'Image', alignRight: false },
   { id: 'Status', label: 'Status', alignRight: false },
-  {id:'', alignRight:false},
 ];
+
 
 // ----------------------------------------------------------------------
 
@@ -178,7 +181,69 @@ export default function AdminViewPlayer() {
 
   const isUserNotFound = filteredUsers.length === 0;
 
- 
+
+  
+  const genereatePdf = () => {
+
+  const unit = "pt";
+  const size = "A4"; 
+  const orientation = "portrait"; 
+
+const marginLeft = 40;
+const doc = new jsPDF(orientation, unit, size);
+
+
+const title = "Player Details";
+const headers = [[
+  "FirstName", 
+  "LastName",
+  "Username",
+  "Phone No",
+]];
+
+const data = USERLIST.map(data=> [
+  data.player_fname, 
+  data.Player_lname,
+  data.username,
+  data.Player_no
+]);
+
+var today = new Date();
+var dd = today.getDate();
+
+var mm = today.getMonth()+1; 
+var yyyy = today.getFullYear();
+if(dd<10) 
+{
+    dd='0'+dd;
+} 
+
+if(mm<10) 
+{
+    mm='0'+mm;
+} 
+today = mm+'-'+dd+'-'+yyyy;
+
+var newdat = "Date of Report Generated  : "+ today;
+
+
+
+let content = {
+  startY: 50,
+  head: headers,
+  body: data
+};
+
+doc.text(title, marginLeft, 20);
+    doc.autoTable(content);
+
+    doc.setFontSize(10);
+    doc.text(40, 40, newdat)
+
+doc.save("PlayerDetails.pdf")
+  }
+
+
   const StatusMenu = (prop)=>{
     const ref = useRef(null)
     const [isOpen, setIsOpen] = useState(false);
@@ -262,10 +327,20 @@ export default function AdminViewPlayer() {
           </Typography>
         </Stack>
         <Card>
+        <IconButton
+
+              sx={{
+                float:'right',
+                marginLeft:'30px'
+              }}
+              onClick = {genereatePdf}
+              ><Iconify icon="prime:file-pdf" width={30} height={30} /></IconButton>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
+          
             <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
+              
+              <Table id="table">
                 <UserListHead
                   order={order}
                   orderBy={orderBy}

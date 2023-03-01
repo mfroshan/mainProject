@@ -153,43 +153,22 @@ export default function AdminViewMatches() {
 
   const isUserNotFound = filteredUsers.length === 0;
 
-  const StatusMenu = (props) => {
+  // const StatusMenu = (props) => {
     
-    return(
-      <>
-    {
+  //   return(
+  //     <>
+  //   {
       
-      props.bstatus===0 &&
-      <Button
-      variant='contained'
-      onClick={()=>{
-          navigate('/dashboard/auctiondisplay',
-          { state:
-            {
-              mid : props.matchid,
-            }
-          })
-        }}
-      >View Auction
-      </Button>
-    }
-    {
-      props.bstatus===1 &&
-        <Button
-        variant='contained'
-        onClick={()=>{
-          console.log('Auction Details');  
-          navigate('/dashboard/auctiondetails',{state:{
-            mid : props.matchid,
-          }})        
-        }}
-        >
-          Auction Details
-        </Button>
-      }
-      </>
-    )
-  }
+  //     props.bstatus===0 &&
+      
+  //   }
+  //   {
+  //     props.bstatus===1 &&
+        
+  //     }
+  //     </>
+  //   )
+  // }
 
 
   return (
@@ -202,7 +181,14 @@ export default function AdminViewMatches() {
           </Typography>
         </Stack>
 
-        <KeyboardBackspaceIcon />
+        <KeyboardBackspaceIcon 
+        sx={{
+          cursor:'pointer'
+        }}
+        onClick={()=>{
+          navigate(-1)
+        }}
+        />
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
@@ -228,7 +214,33 @@ export default function AdminViewMatches() {
                             </Typography>
                         </TableCell>
                         <TableCell component="th" scope="row" sx={{cursor: "pointer"}}>
-                            <StatusMenu matchid={match_id} bstatus={bstatus}/>
+                            {/* <StatusMenu matchid={match_id} bstatus={bstatus}/> */}
+                            <Button
+                                variant='contained'
+                                onClick={()=>{
+                                    navigate('/dashboard/auctiondisplay',
+                                    { state:
+                                      {
+                                        mid :match_id,
+                                      }
+                                    })
+                                  }}
+                                >View Auction
+                                </Button>
+                           </TableCell>
+                           <TableCell component="th" scope="row" sx={{cursor: "pointer"}}>
+                            {/* <StatusMenu matchid={match_id} bstatus={bstatus}/> */}
+                            <Button
+                                      variant='contained'
+                                      onClick={()=>{
+                                        console.log('Auction Details');  
+                                        navigate('/dashboard/auctiondetails',{state:{
+                                          mid : match_id,
+                                        }})        
+                                      }}
+                                      >
+                                        Auction Details
+                                      </Button>
                            </TableCell>
                       </TableRow>
                     );

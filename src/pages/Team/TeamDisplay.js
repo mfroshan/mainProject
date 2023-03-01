@@ -36,8 +36,11 @@ import Label from '../../components/label';
 import Scrollbar from '../../components/Scrollbar';
 import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user';
+import { UserListHead, UserListToolbar} from '../../sections/@dashboard/user';
 import AddTeam from './AddTeam';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 
 // mock
 // import USERLIST from '../_mock/user';
@@ -156,27 +159,74 @@ export default function TeamDisplay() {
     setSelected([]);
   };
 
-  // const deleteUser = (cid)=>{
-  //   const deleterequestdata = {
-  //     "type" : "SP_CALL",
-  //   "requestId" : 1600004,
-  //      request: {
-  //   "id" : cid
-  //     }
-  //   }
+  const genereatePdf = () => {
+
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
     
-  //   axios.post("").then((res) => {
-  //     display();
-  //       }).catch(() => {
-  //           console.log('No internet connection found. App is running in offline mode.');
-  //         });
-  //            }
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+    
+    
+    const title = "Team Details";
+    const headers = [[
+      "FirstName", 
+      "LastName",
+      "Username",
+      "Phone No",
+    ]];
+    
+    const data = USERLIST.map(data=> [
+      data.team_fname, 
+      data.team_lname,
+      data.team_username,
+      data.team_number
+    
+    ]);
+
+    var today = new Date();
+    var dd = today.getDate();
+    
+    var mm = today.getMonth()+1; 
+    var yyyy = today.getFullYear();
+    if(dd<10) 
+    {
+        dd='0'+dd;
+    } 
+    
+    if(mm<10) 
+    {
+        mm='0'+mm;
+    } 
+    today = mm+'-'+dd+'-'+yyyy;
+
+    var newdat = "Date of Report Generated  : "+ today;
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data
+    };
+    
+    doc.text(title, marginLeft, 20);
+    doc.autoTable(content);
+
+    doc.setFontSize(10);
+    doc.text(40, 35, "Match Name: "+ USERLIST[0].match_fname+" "+USERLIST[0].match_lname)
+
+    doc.setFontSize(10);
+    doc.text(40, 45, newdat)
+        doc.save('Team Details.pdf')
+      }
+
 
   const handleAdd = (e, upd = Boolean(false), button = 'ADD', data = {}) => {
     const add = (data) => {
       setOpen(false) ;
       setDialog();
       display();
+      
     };
     setDialog(() => (
       <AddTeam
@@ -279,9 +329,16 @@ export default function TeamDisplay() {
         </Stack>
 
         <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)
-        localStorage.removeItem("MacthId");
+        
         }} />
         <Card>
+        <IconButton
+          sx={{
+            float:'right',
+            marginLeft:'30px'
+          }}
+          onClick = {genereatePdf}
+          ><Iconify icon="prime:file-pdf" width={40} height={40} /></IconButton>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>

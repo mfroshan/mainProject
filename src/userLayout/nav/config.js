@@ -90,6 +90,21 @@ if(role === "Admin"){
     title: 'Auction',
     path: '/user/teambidview',
     icon: icon('ic_user'),
+  },
+  {
+    title:'Player Registered',
+    path:'/user/playerlist',
+    icon: icon('ic_user'),
+  },
+  {
+    title:'Request ReAuction',
+    path:'/user/request',
+    icon: icon('ic_user'),
+  },
+  {
+    title:'My Team',
+    path:'/user/listplayer',
+    icon: icon('ic_user'),
   }
   );
  }

@@ -35,6 +35,10 @@ import AdminViewPosition from './pages/Admin/AdminViewPosition';
 import AdminViewMatches from './pages/Admin/AdminViewMatches';
 import ViewAuction from './pages/user/ViewAuction';
 import AuctionDetails from './pages/auction/AuctionDetails';
+import ViewCategory from './pages/Category/ViewCategory';
+import PlayerRegCom from './pages/PlayerRegCom';
+import TeamComReg from './pages/TeamComReg';
+import TeamViewPlayer  from './pages/user/TeamViewPlayer';
 
 
 // ----------------------------------------------------------------------
@@ -75,6 +79,7 @@ export default function Router() {
         { path: 'position', element: <ManagePosition />},
         { path: 'profile', element: <Profile />}, 
         { path: 'auctions' ,element: <MatchesAuction />},
+        {path:'viewcategory',element:<ViewCategory />},
         {path:'auctiondetails',element:<AuctionDetails />},
         { path: 'auctiondisplay', element: <AuctionDisplay />},
         {path: 'viewplayer', element:<AdminViewPlayer />},   
@@ -100,9 +105,18 @@ export default function Router() {
         { element: <Navigate to="/user/profile" />, index: true },
         { path: 'profile', element: <Profile />},
         { path: 'teambidview', element: <TeamBidView />},
-        { path: 'viewauction', element: <ViewAuction />},          
+        { path: 'viewauction', element: <ViewAuction />},   
+        { path:'playerlist', element: <TeamViewPlayer />},       
         { path: '*', element: <Navigate to="/User404" />}
       ],
+    },
+    {
+        path:'/registerteam',
+        element: <TeamComReg />,
+    },
+    {
+        path:'/registerplayer',
+        element: <PlayerRegCom/>,
     },
     {
       path: '/login',

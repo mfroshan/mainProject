@@ -1,4 +1,4 @@
-import { filter } from 'lodash';
+import { filter, set } from 'lodash';
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from "react-router-dom";
@@ -69,8 +69,32 @@ export default function MatchDetails() {
     setDialog();
   };
   const [USERLIST,setUserList] = useState();
+
+  const [pcount ,setpcount]= useState();
+
+  const [tcount,settcount] = useState();
       
 
+  const getCount = () => 
+  {
+    axios.post("http://localhost:3001/getPlayerCount",{
+      id:location.state.mid,
+    }).then((res) => {
+   if(res.data[0]){
+    setpcount(res.data[0].pcount);
+      settcount(res.data[0].tcount);
+   }
+   else{
+    setpcount(res.data[0].pcount);
+      settcount(res.data[0].tcount);    
+   }
+    }).catch((error) => {
+      console.log(error);
+        console.log('No internet connection found. App is running in offline mode.');
+      });
+  }
+
+  
       const display = () => {
         axios.post("http://localhost:3001/bidStatus",{
           id:location.state.mid,
@@ -90,6 +114,7 @@ export default function MatchDetails() {
       
   useEffect(() => {
    display();
+   getCount();
   }, [])
   
   const [open, setOpen] = useState(true);
@@ -110,21 +135,30 @@ export default function MatchDetails() {
       <>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       {props.status === 0  && 
-      <CardContent sx={{ flex: '1 0 auto' }}>
-          <Typography component="div" variant="h6">
-            Create a bid Room
-          </Typography>
-        <Button onClick={()=>{
+      <>
+          
+      
+        <Button variant="contained"  startIcon={<Iconify icon="material-symbols:select-check-box" />}
+        onClick={()=>{
           navigate('/dashboard/bidsetup', {state:{
             matchid: location.state.mid,
              }
            }
            )
-        }}>setup bid</Button>
-        </CardContent>
+        }}>Select Player For Auction</Button>
+        </>
         }
         {
-         props.status ===1 && <Button>Bid Details</Button>
+         props.status ===1 && 
+         <Button variant='contained' 
+         onClick={()=>{
+          navigate('/dashboard/auctiondetails', {state:{
+            mid: location.state.mid,
+             }
+           }
+           )
+        }}
+         >Bid Details</Button>
         }
       </Box>
       </>);
@@ -158,29 +192,29 @@ export default function MatchDetails() {
             marginLeft:15
           }}>
             <PlayerInMatch 
-               title="Player Details" total={2} icon={'uil:football'} mid={location.state.mid} />
+               title="Player Details" total={pcount} icon={'uil:football'} mid={location.state.mid} />
           </Grid>
           <Grid item xs={12} sm={6} md={3} sx = {{
             marginLeft:40
           }}>
-            <TeamInMatch   title="Team Details" total={2} icon={'ant-design:team-outlined'} mid={location.state.mid} />
+            <TeamInMatch   title="Team Details" total={tcount} icon={'ant-design:team-outlined'} mid={location.state.mid} />
           </Grid>
          </Grid>
 
          <Grid 
          sx={{ display: 'flex', gap:'20rem'}}>
           
-          <PlayerRegGen  mid={location.state.mid}/>
+          <PlayerRegGen mid={location.state.mid}/>
           <TeamRegGen  mid={location.state.mid} />
 
           
           
           </Grid>
 
-        <Grid sx={{ display: 'flex',justifyContent:'center'}}>
-          <Card sx={{ display: 'flex',marginTop:'100px',justifyContent:'center',width:'400px' }}>
+        <Grid sx={{ display: 'flex',justifyContent:'center',marginTop:'50px'}}>
+         
             <StatusMenu status={USERLIST} />
-            </Card>
+            
         </Grid>
 
       </Container>

@@ -117,7 +117,8 @@ export default function BidSetup() {
        else{
         setcount([]);
         setStatus(false);
-       }
+        navigate(-1)       
+      }
         }).catch((error) => {
           console.log(error);
             console.log('No internet connection found. App is running in offline mode.');
@@ -141,7 +142,9 @@ export default function BidSetup() {
       <Typography variant="h4" sx={{ mb: 5 }}>
        Players 
       </Typography>
+
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 12, sm: 12, md: 12 }}>
+      <KeyboardBackspaceIcon sx={{cursor: "pointer"}} onClick={()=>{navigate(-1)}} />
 {
   pendingstat && 
       <Grid item xs={2} sm={4} md={4}  >

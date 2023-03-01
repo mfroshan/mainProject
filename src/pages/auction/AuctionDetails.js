@@ -1,24 +1,15 @@
 import { filter } from 'lodash';
 import axios from 'axios';
-import { sentenceCase } from 'change-case';
 import { useState, useEffect, useRef } from 'react';
 import { Link as RouterLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 
 // material
 import {
-  Menu, 
-  MenuItem, 
-  ListItemIcon, 
-  ListItemText,
   Card,
   Table,
   Stack,
-  Avatar,
-  Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -26,7 +17,9 @@ import {
   Typography,
   TableContainer,
   TablePagination,
+  Button
 } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 
 // components
 import Page from '../../components/Page';
@@ -35,6 +28,9 @@ import Scrollbar from '../../components/Scrollbar';
 import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
 import { UserListHead, UserListToolbar } from '../../sections/@dashboard/user';
+import BidHistory from './BidHistory';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // import requestPost from '../serviceWorker';
 // mock
@@ -100,6 +96,7 @@ export default function AuctionDetails() {
   const handleClose = () => {
     setDialog();
   };
+
   const [USERLIST,setUserList] = useState([]);
   
   const [mid ,setmid] = useState(
@@ -134,8 +131,6 @@ export default function AuctionDetails() {
   
   const [open, setOpen] = useState(true);
 
-  
-
   const [addDialog, setDialog] = useState();
 
   const [page, setPage] = useState(0);
@@ -150,6 +145,8 @@ export default function AuctionDetails() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [openBidHistory, setOpenBidHistory] = useState(false);
+
   
 
   const handleRequestSort = (event, property) => {
@@ -158,9 +155,84 @@ export default function AuctionDetails() {
     setOrderBy(property);
   };
 
-  
 
- 
+  const handleClickOpen = (tid,pid,mid,matchname,playername) => {
+    setDialog(
+        <BidHistory 
+          onClose={handleClose}
+          open={open}
+          tid={tid}
+          pid={pid}
+          mid={mid}
+          pname={playername}
+          mname={matchname}
+        />      
+    );
+    setOpenBidHistory(true);
+  }
+
+  const genereatePdf = () => {
+
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
+    
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+    
+    
+    const title = "Auction Details";
+    const headers = [[
+      "Player Name",
+      "Position", 
+      "Bid Amount",
+      "Bided Team",
+    ]];
+    
+    const data = USERLIST.map(data=> [
+      data.playername, 
+      data.pos_name,
+      data.price,
+      data.teamname
+    
+    ]);
+
+    var today = new Date();
+    var dd = today.getDate();
+    
+    var mm = today.getMonth()+1; 
+    var yyyy = today.getFullYear();
+    if(dd<10) 
+    {
+        dd='0'+dd;
+    } 
+    
+    if(mm<10) 
+    {
+        mm='0'+mm;
+    } 
+    today = mm+'-'+dd+'-'+yyyy;
+
+    var newdat = "Date of Report Generated  : "+ today;
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data
+    };
+    
+    doc.text(title, marginLeft, 20);
+    doc.autoTable(content);
+
+    doc.setFontSize(10);
+    doc.text(40, 35, "Match Name: "+ USERLIST[0].matchname)
+
+    doc.setFontSize(10);
+    doc.text(40, 45, newdat)
+        doc.save('Auction Details.pdf')
+      }
+
+
 
 
   const handleChangePage = (event, newPage) => {
@@ -193,7 +265,22 @@ export default function AuctionDetails() {
           </Typography>
         </Stack>
 
+        <KeyboardBackspaceIcon 
+        sx={{
+          cursor:'pointer'
+        }}
+        onClick={()=>{
+          navigate(-1)
+        }}
+        />
         <Card>
+        <IconButton
+          sx={{
+            float:'right',
+            marginLeft:'30px'
+          }}
+          onClick = {genereatePdf}
+          ><Iconify icon="prime:file-pdf" width={40} height={40} /></IconButton>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -209,12 +296,13 @@ export default function AuctionDetails() {
                 />
                 <TableBody>
                   {filteredUsers && filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { teamname,	playername,	matchname,	price,	pos_name} = row;
+                    const { teamname,	playername,	matchname,	price,	pos_name,team_id,player_id,match_id} = row;
                     return (
                       <TableRow>                      
                         <TableCell component="th" scope="row">
                             <Typography variant="h6">
-                              {teamname}
+                               {matchname}
+                              
                             </Typography>
                         </TableCell >
 
@@ -225,10 +313,19 @@ export default function AuctionDetails() {
                         {price}
                            </TableCell>
                            <TableCell variant="h6">
-                        {matchname}
+                        {teamname}
                            </TableCell>
                            <TableCell variant="h6">
                         {pos_name}
+                           </TableCell>
+                           <TableCell variant='h6'>
+                            <Button
+                            onClick={()=>{
+                              handleClickOpen(team_id,player_id,match_id,matchname,playername)
+                            }}
+                            >
+                              BidHistory
+                            </Button>
                            </TableCell>
                       </TableRow>
                     );

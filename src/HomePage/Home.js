@@ -29,7 +29,7 @@ function Home() {
       <Section />
       <AboutUs />
       {/* <Testimonial /> */}
-      <ContactUs />
+      {/* <ContactUs /> */}
       <Footer />
       </ThemeProvider>
     </>

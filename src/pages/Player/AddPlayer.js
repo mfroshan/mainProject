@@ -254,6 +254,7 @@ const UpdatePlayer = () => {
     formik.resetForm();
     details.onClose();
   };
+  
   return (
     <div>
       <Dialog fullScreen open={details.open} onClose={details.onClose}>

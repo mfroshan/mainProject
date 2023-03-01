@@ -1052,6 +1052,81 @@ const conn = mysql.createConnection({
         });
     });
 
+
+    // insert category
+
+        
+
+    app.post('/Insertcat' , (req,res) => {
+
+        
+        const Posname = req.body.pos_value;
+        conn.query("call insertCat(?)",
+        [Posname],
+            (err,result) => {
+                if(err){ 
+                    console.log(err);
+                }
+                if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No position found!");
+                    res.send({message:'position Not Found!'});
+                }
+        });
+    });
+
+
+    // update category
+
+    app.post('/updateCat' , (req,res) => {
+
+        const pos_id = req.body.pos_id;
+        const Posname = req.body.pos_value;
+        conn.query("call UpdateCat(?,?)",
+        [pos_id,Posname],
+            (err,result) => {
+                if(err){ 
+                    console.log(err);
+                }
+                if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No position found!");
+                    res.send({message:'position Not Found!'});
+                }
+        });
+    });
+
+    // delete category
+
+        
+    app.post('/delCat' , (req,res) => {
+
+        
+        const posid = req.body.pos_id;
+        conn.query("call deleteCat(?)",
+        [posid],
+            (err,result) => {
+                if(err){ 
+                    console.log(err);
+                }
+                if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("position Not Found!");
+                    res.send({message:'position Not Found!'});
+                }
+        });
+    });
+
+
     //update Poition
 
     app.post('/updatePos' , (req,res) => {
@@ -1097,6 +1172,52 @@ const conn = mysql.createConnection({
                 }
         });
     });
+
+    // displayCategory
+
+    app.post('/getCat' , (req,res) => {
+        
+        conn.query("call getCat",
+            (err,result) => {
+                //res.send(result)
+                if(err){ 
+                    console.log(err);
+                }
+                else if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No user found!");
+                    res.send({message:'User Not Found!'});
+                }
+        });
+    });
+
+
+    // get Player Count for display in match details
+
+    app.post('/getPlayerCount' , (req,res) => {
+
+        
+        const id = req.body.id;
+        conn.query("call getCountplayer(?)",
+        [id],
+            (err,result) => {
+                if(err){ 
+                    console.log(err);
+                }
+                if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                    // res.send({message:0});
+                }else{
+                    console.log("No position found!");
+                    res.send({message:'position Not Found!'});
+                }
+        });
+    });
+
 
     // change pending players
 

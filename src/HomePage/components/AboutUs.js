@@ -27,7 +27,7 @@ const AboutUs = () => {
             color="primary"
             sx={{ width: '200px', fontSize: '16px' }}
           >
-            CONTACT US
+            TRY US
           </Button>
         </Grid>
       </Grid>

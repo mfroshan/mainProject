@@ -3,6 +3,7 @@
 
 import SvgColor from '../../../components/svg-color';
 
+
 // ----------------------------------------------------------------------
 
 const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
@@ -21,6 +22,10 @@ if(role === "Admin"){
     title: 'dashboard',
     path: '/dashboard/app',
     icon: icon('ic_analytics'),
+  },{
+    title: 'Category',
+    path: '/dashboard/viewcategory',
+    icon: icon('ic_user'),
   },
   {
     title: 'Team Details',
