@@ -8,18 +8,19 @@ import { useNavigate } from 'react-router-dom';
 import Label from '../../components/label';
 
 
-export const TeamViewPlayer = (props) => {
+export const MyTeam = (props) => {
    
 
     const [ USERLIST ,setUserList ] = useState([]);   
 
-    const navigate = useNavigate();
-
 
     const display = () => {
         const  mid = localStorage.getItem("mid");
-        axios.post("http://localhost:3001/playerdisplay",{
-          m_id: mid, 
+        const tid = localStorage.getItem("TeamID");
+
+        axios.post("http://localhost:3001/myTeamDisplay",{
+          mid: mid, 
+          tid:tid,
         }).then((res) => {
        if(res.data[0]){
           setUserList(res.data[0]);
@@ -39,11 +40,14 @@ export const TeamViewPlayer = (props) => {
     
         },[])
 
+        
+    
+
   return (
          <Container maxWidth="xl">
             
                     <Typography variant="h4" sx={{ mb: 5 }}>
-                        Player Registered For Auction
+                        My Team
                     </Typography>
 
                     <Grid 
@@ -54,11 +58,7 @@ export const TeamViewPlayer = (props) => {
                     {
                         USERLIST.map((data)=>{
                             const {player_img,player_fname,Player_lname,pos_name,bidstatus} = data;
-                            let stst = 'Available'
-                  
-                                if(bidstatus === 1){
-                                    stst = 'Not Available'
-                                }
+                            
 
                                 return(
 
@@ -93,15 +93,7 @@ export const TeamViewPlayer = (props) => {
                                                    Previous Club:
                                                 </Typography>
                                             </Stack>
-                                            <Label 
-                                             sx={{
-                                                float:'right',
-                                                marginTop:'10px',
-                                                marginBottom:'10px'
-                                             }}
-                                             color={bidstatus ? 'error' : 'success'}>
-                                                            {stst}
-                                                        </Label>
+                                            
                                             </CardContent>
                                         </Card>
                                     </Grid>
@@ -115,4 +107,4 @@ export const TeamViewPlayer = (props) => {
   )
 }
 
-export default TeamViewPlayer;
+export default MyTeam;

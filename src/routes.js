@@ -39,6 +39,9 @@ import ViewCategory from './pages/Category/ViewCategory';
 import PlayerRegCom from './pages/PlayerRegCom';
 import TeamComReg from './pages/TeamComReg';
 import TeamViewPlayer  from './pages/user/TeamViewPlayer';
+import MyTeam from './pages/Team/MyTeam';
+import AdminViewTeamPlayers from './pages/Admin/AdminViewTeamPlayers';
+import DisplayComplaint from './pages/Complaints/DisplayComplaint';
 
 
 // ----------------------------------------------------------------------
@@ -79,13 +82,14 @@ export default function Router() {
         { path: 'position', element: <ManagePosition />},
         { path: 'profile', element: <Profile />}, 
         { path: 'auctions' ,element: <MatchesAuction />},
-        {path:'viewcategory',element:<ViewCategory />},
-        {path:'auctiondetails',element:<AuctionDetails />},
+        { path:'teamplayer',element:<AdminViewTeamPlayers />},
+        { path:'viewcategory',element:<ViewCategory />},
+        { path:'auctiondetails',element:<AuctionDetails />},
         { path: 'auctiondisplay', element: <AuctionDisplay />},
-        {path: 'viewplayer', element:<AdminViewPlayer />},   
-        {path:'viewteam', element: <AdminViewTeam />}, 
-        {path:'viewpositon',element: <AdminViewPosition />},
-        {path:'viewmatches',element:<AdminViewMatches />},   
+        { path: 'viewplayer', element:<AdminViewPlayer />},   
+        { path:'viewteam', element: <AdminViewTeam />}, 
+        { path:'viewpositon',element: <AdminViewPosition />},
+        { path:'viewmatches',element:<AdminViewMatches />},   
         { path: '*', element: <Navigate to="/404" />}
       ],
     },
@@ -106,7 +110,9 @@ export default function Router() {
         { path: 'profile', element: <Profile />},
         { path: 'teambidview', element: <TeamBidView />},
         { path: 'viewauction', element: <ViewAuction />},   
-        { path:'playerlist', element: <TeamViewPlayer />},       
+        { path:'playerlist', element: <TeamViewPlayer />},     
+        {path:'listplayer',element:<MyTeam />}, 
+        {path:'request',element:<DisplayComplaint />}, 
         { path: '*', element: <Navigate to="/User404" />}
       ],
     },

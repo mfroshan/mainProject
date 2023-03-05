@@ -790,6 +790,70 @@ const conn = mysql.createConnection({
 
     });
 
+    // fetch player for complaint
+    app.post('/fetchplayer',(req,res)=>{
+        
+        const mid = req.body.mid;
+        const tid = req.body.tid;
+        
+        conn.query("call Fetchplayers(?,?)",
+        [mid,tid],
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+
+    });
+
+    // getp
+
+    app.post('/getp',(req,res)=>{
+        
+        const tid = req.body.tid;
+        
+        conn.query("call getp(?)",
+        [tid],
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+
+    });
+
+     // My Team
+     app.post('/myTeamDisplay',(req,res)=>{
+        
+        const mid = req.body.mid;
+        const tid = req.body.tid;
+        
+        conn.query("call myTeam(?,?)",
+        [mid,tid],
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+
+    });
+
+
     // Display all player
 
     app.post('/playerdisplayadmin',(req,res)=>{

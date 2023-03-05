@@ -4,28 +4,32 @@ import CardMedia from '@mui/material/CardMedia';
 import Item from '@mui/material/ListItem';
 import CardContent from '@mui/material/CardContent';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Label from '../../components/label';
 
 
-export const TeamViewPlayer = (props) => {
+export const AdminViewTeamPlayers = () => {
    
+
+    const location = useLocation();
 
     const [ USERLIST ,setUserList ] = useState([]);   
 
-    const navigate = useNavigate();
-
 
     const display = () => {
-        const  mid = localStorage.getItem("mid");
-        axios.post("http://localhost:3001/playerdisplay",{
-          m_id: mid, 
+        
+
+        axios.post("http://localhost:3001/myTeamDisplay",{
+          mid: location.state.mid, 
+          tid:location.state.tid,
         }).then((res) => {
        if(res.data[0]){
           setUserList(res.data[0]);
+          console.log(USERLIST.length)
        }
        else{
         setUserList([]);
+        console.log(USERLIST.length)
        }
         }).catch((error) => {
           console.log(error);
@@ -39,11 +43,14 @@ export const TeamViewPlayer = (props) => {
     
         },[])
 
+        
+    
+
   return (
          <Container maxWidth="xl">
             
                     <Typography variant="h4" sx={{ mb: 5 }}>
-                        Player Registered For Auction
+                        Player Under Team
                     </Typography>
 
                     <Grid 
@@ -52,13 +59,10 @@ export const TeamViewPlayer = (props) => {
                       spacing={2}
                     >
                     {
-                        USERLIST.map((data)=>{
+                    USERLIST &&   
+                       USERLIST.map((data)=>{
                             const {player_img,player_fname,Player_lname,pos_name,bidstatus} = data;
-                            let stst = 'Available'
-                  
-                                if(bidstatus === 1){
-                                    stst = 'Not Available'
-                                }
+                            
 
                                 return(
 
@@ -93,15 +97,7 @@ export const TeamViewPlayer = (props) => {
                                                    Previous Club:
                                                 </Typography>
                                             </Stack>
-                                            <Label 
-                                             sx={{
-                                                float:'right',
-                                                marginTop:'10px',
-                                                marginBottom:'10px'
-                                             }}
-                                             color={bidstatus ? 'error' : 'success'}>
-                                                            {stst}
-                                                        </Label>
+                                            
                                             </CardContent>
                                         </Card>
                                     </Grid>
@@ -109,10 +105,28 @@ export const TeamViewPlayer = (props) => {
                                 )
                         })
                     }
+
+                    {USERLIST.length === 0 && 
+
+                        <div>
+                            <Typography
+                            variant="h4" 
+                            sx={{
+                                display:'flex',
+                                justifyContent:'center',
+                                marginTop:'200px',
+                                marginLeft:'400px'
+                            }}
+                            >
+                                No Players Yet!
+                            </Typography>
+                            </div>
+
+                    }
                        
                     </Grid>
                 </Container>
   )
 }
 
-export default TeamViewPlayer;
+export default AdminViewTeamPlayers;

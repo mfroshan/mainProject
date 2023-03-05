@@ -101,7 +101,9 @@ export default function PlayerCommonReg() {
     password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
     selectpos: Yup.string().required("Position Should be selected!"),
     selectmatch:Yup.string().required("Match Should be Selected!"),
-    
+    pvclub: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Previous Club should be Specified!'),
+    exp: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Experience is required'),
+    about: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('About is required'),
   });
 
   const formik = useFormik({
@@ -113,6 +115,9 @@ export default function PlayerCommonReg() {
       password:  '',
       selectpos:'',
       selectmatch:'',
+      about: '',
+      pvclub: '',
+      exp: '',
     },
     validationSchema: validSchema,
     onSubmit: (values, actions) => {
@@ -390,10 +395,31 @@ const getAmt = () => {
         </Select>
       </FormControl>
 
-      
+      <TextField type="text" name="exp" label="Experience" 
+         required
+         {...getFieldProps('exp')}
+         helperText={touched.exp && errors.exp}
+         error={Boolean(touched.exp && errors.exp)}
+         />
+        
+        <TextField type="text" name="exp" label="Previous Club" 
+         required
+         {...getFieldProps('pvclub')}
+         helperText={touched.pvclub && errors.pvclub}
+         error={Boolean(touched.pvclub && errors.pvclub)}
+         />
+
+        <TextField
+          id="outlined-multiline-static"
+          label="About You"
+          multiline
+          rows={4}
+          {...getFieldProps('about')}
+         helperText={touched.about && errors.about}
+         error={Boolean(touched.about && errors.about)}
+        />
 
       </Stack>
-
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
         {/* <Checkbox name="remember" label="Remember me" />
         <Link variant="subtitle2" underline="hover">

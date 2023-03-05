@@ -334,7 +334,19 @@ export default function AdminViewTeam() {
                     return (
                       <TableRow>                      
                         <TableCell component="th" scope="row" >
-                            <Typography variant="h6" >
+                            <Typography variant="h6" 
+                            sx={{
+                              cursor:'pointer'
+                            }}
+                            onClick = {()=>{
+                              navigate('/dashboard/teamplayer',{
+                                state:{
+                                  mid:match_id,
+                                  tid:team_id
+                                }
+                              })
+                            }}
+                            >
                               {team_fname}
                             </Typography>
                         </TableCell>

@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 //
 import Header from './header';
 import Nav from './nav';
+import BalanceBidAmount from 'src/pages/BalanceBidAmount';
 
 // ----------------------------------------------------------------------
 
@@ -40,10 +41,11 @@ export default function UserLayout() {
       <Header onOpenNav={() => setOpen(true)} />
 
       <Nav openNav={open} onCloseNav={() => setOpen(false)} />
-
+      
       <Main>
         <Outlet />
       </Main>
+      
     </StyledRoot>
   );
 }

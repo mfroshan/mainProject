@@ -37,7 +37,7 @@ import Scrollbar from '../../components/Scrollbar';
 import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
 import { UserListHead, UserListToolbar} from '../../sections/@dashboard/user';
-import AddTeam from './AddTeam';
+import AddComplaint from './AddComplaint';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -89,7 +89,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function TeamDisplay() {
+export default function DisplayComplaint() {
   const navigate = useNavigate()
   const ref = useRef(null);
 
@@ -229,7 +229,7 @@ export default function TeamDisplay() {
       
     };
     setDialog(() => (
-      <AddTeam
+      <AddComplaint
         onClose={handleClose}
         open={open}
          submit={add}
@@ -321,10 +321,10 @@ export default function TeamDisplay() {
       {addDialog}
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Team
+             Re Auction Request
           </Typography>
           <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Team
+            New Request
           </Button>
         </Stack>
 

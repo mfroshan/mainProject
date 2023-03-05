@@ -17,6 +17,7 @@ import { styled } from '@mui/material/styles';
 import Page from '../../components/Page';
 import { id } from 'date-fns/locale';
 import { UpdateDetails } from './UpdateDetails';
+import BalanceBidAmount from '../BalanceBidAmount';
 
 // ----------------------------------------------------------------------
 const ImageStyle = styled('img')(({ theme }) => ({
@@ -34,12 +35,38 @@ export default function Profile(props) {
     const [edit3, setEdit3] = useState(false);
     const [datas, setdatas] = useState({});
     const [proImg, setImg] = useState();
+    const [mid,setmid] = useState();
+    const [tid,settid] = useState();
 
     const profileClick = () => {
         setOpen(true);
     };
 
+    const [bidamontLeft,setbidamountLeft] = useState();
+
     
+
+    const BalanceBidAmount = () =>{
+
+        const mid = localStorage.getItem("mid");
+        const teamid = localStorage.getItem("TeamID");
+        
+
+        axios.post("http://localhost:3001/getBalanceBidAmount",{
+            mid: props.mid,
+            tid:teamid,
+          }).then((res) => {
+         if(res.data[0]){
+            console.log(res.data[0][0].amount);
+            setbidamountLeft(res.data[0][0].amount);
+            }else{
+                setbidamountLeft(0);
+            }
+          }).catch((error) => {
+            console.log(error);
+              console.log('No internet connection found. App is running in offline mode.');
+            });
+      }
     
 
     
@@ -53,6 +80,7 @@ export default function Profile(props) {
             console.log(res.data)
             if (res.data[1][0].status === 0) {
               console.log(res.data[0])
+              setmid(res.data[0][0].mid);
               localStorage.setItem("mid",res.data[0][0].mid);
               localStorage.setItem("fname",res.data[0][0].fname);
               localStorage.setItem("lname",res.data[0][0].lname);
@@ -60,6 +88,7 @@ export default function Profile(props) {
               if(res.data[0][0].img !== null){
                 setImg(res.data[0][0].img);
               }
+              BalanceBidAmount();
             }
           })
       }
@@ -245,6 +274,9 @@ export default function Profile(props) {
                     <Typography variant="h4" sx={{ mb: 5 }}>
                         Profile
                     </Typography>
+                    
+                    <BalanceBidAmount mid={mid}/>
+
                     <Grid container spacing={2}>
                         <Grid item align="left" xs={12} sm={3} md={3}>
                             <Card
