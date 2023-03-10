@@ -16,13 +16,12 @@ import Select from '@mui/material/Select';
 import { reject } from 'lodash';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Avatar from '@mui/material/Avatar';
-import { Label } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 export default function AddComplaint(details) {
 
-  console.log(details.data);
+  // console.log(details.data);
 
   const [posData , setPosData ] = useState([]);
 
@@ -38,15 +37,17 @@ export default function AddComplaint(details) {
 
   const [showPassword, setShowPassword] = useState(false);
   
-  const [type, setType] = useState("Team");
+  
 
   const [uploadcnt, setUploadcnt] = useState(1);
+
+  const [multiplefile ,setmultiplefile] = useState([]);
   
   
 
   const validSchema = Yup.object().shape({
     reason: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Reason is required'),
-    poc: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Proof is required'),
+    //poc: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Proof is required'),
     selectplayer: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('select player'),
     
   });
@@ -59,7 +60,7 @@ export default function AddComplaint(details) {
   const formik = useFormik({
     initialValues: {
       reason: update ? details.data.reason : '',
-      poc: update ? details.data.poc : '',
+      // poc: update ? details.data.poc : '',
       selectplayer : update ? details.data.playerid : ''
     },
     validationSchema: validSchema,
@@ -71,7 +72,8 @@ export default function AddComplaint(details) {
 
   
 
-  const handleFileUpload =  async (e) => {
+  const handleFileUpload =  async (id,e) => {
+   
     const filename = e.target.files[0];
   
     setFilename(e.target.files.data);
@@ -82,9 +84,16 @@ export default function AddComplaint(details) {
     const base64Value  = await convertBase64(filename);
   
     setBase64value(base64Value);
-    console.log(base64Value);
+    //console.log(base64Value);
+    setmultiplefile(multiplefile =>[...multiplefile,
+      {
+      id:base64Value
+      }
+    ]);
   }
+  // console.log(multiplefile);
   
+
   const convertBase64 =  (filename) =>{
       return new Promise((resolve,object) => {
         const fileReader = new FileReader();
@@ -101,6 +110,9 @@ export default function AddComplaint(details) {
       })
   }
 
+  const deltml = (id) => {
+      delete multiplefile[id];
+  }
   const alertTimeOut = () => {
     setTimeout(() => {
       setAlert();
@@ -110,75 +122,52 @@ export default function AddComplaint(details) {
   const onAdd = () => {
     
 
-const UpdateTeam = () => {
-  
-
-    Axios.post("http://localhost:3001/TeamUpdate", {
-
-      username: values.username,
-      password: values.password,
-      fname: values.fname,
-      lname: values.lname,
-      phoneNo:values.Mobnum,
-      match: values.selectmatch,
-      id: details.data.team_id,
-      
-    }).then((response) =>{
-      console.log(response.data[0][0]);
-      if(response.data[0][0].status === 0){        
-          // navigate('/',{replace:true});
-      }
-      else{
-        console.log(response.data[0][0].msg)
-        // showToastMsgFail();
-      }
-      
-    }).catch(() => {
-      console.log('No internet connection found. App is running in offline mode.');
-    });
-  }
 
 
-  const insertTeam = () => {
+  const insertreq = () => {
 
+   const mid = localStorage.getItem("mid");
+   const tid = localStorage.getItem("TeamID");
 
-    Axios.post("http://localhost:3001/regTeam", {
+   console.log(mid);
+   console.log(tid);
+   console.log(values.reason);
+   console.log(multiplefile);
+   console.log(values.selectplayer);
 
-    username: values.username,
-    password: values.password,
-    fname: values.fname,
-    lname: values.lname,
-    phoneNo:values.Mobnum,
-    base64v : base64value,
-    match:values.selectmatch,
+  Axios.post("http://localhost:3001/insertReq", {
+
+    mid: mid,
+    tid: tid,
+    reason:values.reason,
+    poc:multiplefile,
+    pid:values.selectplayer,
     
   }).then((response) =>{
-    console.log(response.data[0][0]);
-    if(response.data[0][0].status === 0){        
-        //navigate('/',{replace:true});
+    console.log(response.data[0]);
+    if(response.data[0]==='d'){
+      alert("Data Exist!");
     }
-    else{
-      console.log(response.data[0][0].msg)
-      // showToastMsgFail();
-     }
     }).catch(() => {
       console.log('No internet connection found. App is running in offline mode.');
     });
   }
 
-    if(update){
-        UpdateTeam();
-    }else{
-        insertTeam();
-    }
+  
+    insertreq();
+  
+    
+   
     details.submit();
     alertTimeOut();
   };
 
   
  const getplayer = () =>{
+
   const mid = localStorage.getItem("mid");
   const tid = localStorage.getItem("TeamID");
+
   console.log(mid);
   console.log(tid);
 
@@ -186,7 +175,7 @@ const UpdateTeam = () => {
       mid:mid,
       tid:tid,
     }).then((response) =>{
-      console.log(response.data[0]);
+      // console.log(response.data[0]);
       if(response.data[0]){        
           console.log("player:"+(response.data[0][0]))
           setplayer(response.data[0])        
@@ -221,7 +210,7 @@ const UpdateTeam = () => {
     Axios.post("http://localhost:3001/getp",{
       tid: values,
     }).then((response) =>{
-      console.log(response.data);
+      // console.log(response.data);
       if(response.data[0]){        
           console.log(response.data[0][0])
           setdetails(response.data[0])        
@@ -235,8 +224,7 @@ const UpdateTeam = () => {
  }  
 
   
- console.log(det)
-  
+
  return (
     <div>
       <Dialog fullScreen open={details.open} onClose={details.onClose}>
@@ -300,7 +288,7 @@ const UpdateTeam = () => {
           id={`icon-button-file${index}`}
           type="file"
           onChange={(e)=>{
-            handleFileUpload(e);
+            handleFileUpload(index,e);
           }} 
           />
            </FormControl>
@@ -311,11 +299,17 @@ const UpdateTeam = () => {
         </IconButton>
         { index > 0 ? <RemoveCircleOutlineIcon onClick={()=>{
             setUploadcnt(uploadcnt - 1);
+            console.log(index);
+            deltml(index);
+            setmultiplefile(multiplefile.filter(function (el){
+              return el !=null || el !=undefined;
+            }))
         }}/> : <div/>}
       </label>
           )
       })
     }
+
     <IconButton onClick={()=>{setUploadcnt(uploadcnt + 1)}}>
     <AddIcon></AddIcon>
       

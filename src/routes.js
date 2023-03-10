@@ -42,6 +42,8 @@ import TeamViewPlayer  from './pages/user/TeamViewPlayer';
 import MyTeam from './pages/Team/MyTeam';
 import AdminViewTeamPlayers from './pages/Admin/AdminViewTeamPlayers';
 import DisplayComplaint from './pages/Complaints/DisplayComplaint';
+import Complaint from './pages/Host/Complaint';
+import AdminViewComplaint from './pages/Admin/AdminviewComplaint';
 
 
 // ----------------------------------------------------------------------
@@ -89,7 +91,9 @@ export default function Router() {
         { path: 'viewplayer', element:<AdminViewPlayer />},   
         { path:'viewteam', element: <AdminViewTeam />}, 
         { path:'viewpositon',element: <AdminViewPosition />},
-        { path:'viewmatches',element:<AdminViewMatches />},   
+        { path:'viewmatches',element:<AdminViewMatches />}, 
+        { path:'reauction',element: <Complaint/>},  
+        { path:'viewreauction',element: <AdminViewComplaint/>},
         { path: '*', element: <Navigate to="/404" />}
       ],
     },
@@ -111,8 +115,8 @@ export default function Router() {
         { path: 'teambidview', element: <TeamBidView />},
         { path: 'viewauction', element: <ViewAuction />},   
         { path:'playerlist', element: <TeamViewPlayer />},     
-        {path:'listplayer',element:<MyTeam />}, 
-        {path:'request',element:<DisplayComplaint />}, 
+        {path:'listplayer', element:<MyTeam />}, 
+        {path:'request', element:<DisplayComplaint />}, 
         { path: '*', element: <Navigate to="/User404" />}
       ],
     },

@@ -51,7 +51,13 @@ if(role === "Admin"){
     title: 'Host Details',
     path: '/dashboard/user',
     icon: icon('ic_user'),
-  });
+  },
+  {
+    title: 'Re Auction',
+    path: '/dashboard/viewreauction',
+    icon: icon('ic_user'),
+  }
+  );
 }else if(role==="Host"){
   navConfig.push({
     title: 'dashboard',
@@ -67,9 +73,14 @@ if(role === "Admin"){
     title: 'Profile',
     path: '/dashboard/profile',
     icon: icon('ic_user'),
-  },{
+  },
+  {
     title: 'Auctions',
     path: '/dashboard/auctions',
+    icon: icon('ic_user'),
+  },{
+    title: 'ReAuction Request',
+    path: '/dashboard/reauction',
     icon: icon('ic_user'),
   }
   );

@@ -221,14 +221,14 @@ export default function AuctionDetails() {
       body: data
     };
     
-    doc.text(title, marginLeft, 20);
-    doc.autoTable(content);
+        doc.text(title, marginLeft, 20);
+        doc.autoTable(content);
 
-    doc.setFontSize(10);
-    doc.text(40, 35, "Match Name: "+ USERLIST[0].matchname)
+        doc.setFontSize(10);
+        doc.text(40, 35, "Match Name: "+ USERLIST[0].matchname)
 
-    doc.setFontSize(10);
-    doc.text(40, 45, newdat)
+        doc.setFontSize(10);
+        doc.text(40, 45, newdat)
         doc.save('Auction Details.pdf')
       }
 

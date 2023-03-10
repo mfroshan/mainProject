@@ -6,6 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Label from '../../components/label';
+import BalanceBidAmount from '../BalanceBidAmount';
 
 
 export const TeamViewPlayer = (props) => {
@@ -45,7 +46,7 @@ export const TeamViewPlayer = (props) => {
                     <Typography variant="h4" sx={{ mb: 5 }}>
                         Player Registered For Auction
                     </Typography>
-
+                    <BalanceBidAmount />
                     <Grid 
                       container
                       display='flex'

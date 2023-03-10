@@ -811,6 +811,46 @@ const conn = mysql.createConnection({
 
     });
 
+
+
+    // insert re auction
+
+    app.post('/insertReq',(req,res)=>{
+        
+        const mid = req.body.mid;
+        const tid = req.body.tid;
+        const reason = req.body.reason;
+        const poc = req.body.poc;
+        const pid = req.body.pid;
+        
+        console.log(poc.length);
+
+        // poc.map((data)=>{
+        //     console.log(data.id);
+        // });
+
+        var sql = `select reqID from tbl_requestauction_main where match_id = ${mid} AND player_id = ${pid} AND team_id = ${tid}`;
+        var insertsql = `insert into tbl_requestauction_main (match_id,player_id,team_id,reason) values (${mid},${pid},${tid},'${reason}')`;
+        conn.query(sql,
+            (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log("redID:"+result[0].reqID);
+                res.send("d");
+            }else{
+                conn.query(insertsql);
+                conn.query(sql,(err,result)=>{
+                    const masterid = result[0].reqID;
+                    poc.map((data)=>{
+                        conn.query(`insert into tbl_req_child (reqID,poc) values(${masterid},'${data.id}')`);
+                    })
+                });
+            }
+        });
+    });
+
+
     // getp
 
     app.post('/getp',(req,res)=>{
@@ -830,6 +870,109 @@ const conn = mysql.createConnection({
             }
         });
 
+    });
+
+    // re auction display to players!
+    
+    app.post('/reDisplay',(req,res)=>{
+        
+    const mid = req.body.mid;
+    const tid = req.body.tid;
+    
+    conn.query("call redisplay(?,?)",
+    [mid,tid],
+    (err,result)=>{
+        if(err){
+            console.log(err);
+        }else if(result.length > 0){
+            console.log(result);
+            res.send(result);
+        }else{
+            console.log("No data!");
+        }
+    });
+
+});
+
+
+    // re auction details 
+    app.post('/getRequestDetails',(req,res)=>{
+        
+        const id = req.body.id;
+        
+        conn.query("call reauctiondetails(?)",
+        [id],
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+    
+    });
+
+ // auction request display to host
+        app.post('/AuctionRequest',(req,res)=>{
+                
+            const mid = req.body.mid;
+            
+            conn.query("call AuctionRequestDisplayHost(?)",
+            [mid],
+            (err,result)=>{
+                if(err){
+                    console.log(err);
+                }else if(result.length > 0){
+                    console.log(result);
+                    res.send(result);
+                }else{
+                    console.log("No data!");
+                }
+            });
+
+        });
+
+    // admin view reauction
+    app.post('/AuctionRequestAdmin',(req,res)=>{
+                
+        const mid = req.body.mid;
+        
+        conn.query("call AuctionRequestDisplayAdmin",
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+
+    });
+
+    // approveRequest
+
+    app.post('/approveRequest',(req,res)=>{
+        
+        const id = req.body.id;
+        
+        conn.query("call approve(?)",
+        [id],
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+    
     });
 
      // My Team

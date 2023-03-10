@@ -1,11 +1,10 @@
 import React,{ useState ,useEffect } from 'react'
-import { Grid, Container, Stack, Typography, Card,TextField ,Button} from '@mui/material';
+import { Grid, Container, Stack, Typography, Card} from '@mui/material';
 import CardMedia from '@mui/material/CardMedia';
-import Item from '@mui/material/ListItem';
 import CardContent from '@mui/material/CardContent';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import Label from '../../components/label';
+import BalanceBidAmount from '../BalanceBidAmount';
+
 
 
 export const MyTeam = (props) => {
@@ -49,7 +48,7 @@ export const MyTeam = (props) => {
                     <Typography variant="h4" sx={{ mb: 5 }}>
                         My Team
                     </Typography>
-
+                    <BalanceBidAmount />
                     <Grid 
                       container
                       display='flex'
@@ -102,6 +101,16 @@ export const MyTeam = (props) => {
                         })
                     }
                        
+                       {
+                        USERLIST.length === 0 &&
+                        <div> 
+                                <Typography
+                                variant='h4'
+                                >
+                                    You Have Not Auctioned Any Players!
+                                </Typography>
+                        </div>
+                       }
                     </Grid>
                 </Container>
   )

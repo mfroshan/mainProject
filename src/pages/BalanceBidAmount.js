@@ -9,9 +9,9 @@ import
 function BalanceBidAmount(props) {
 
     console.log(props.mid);
+
     const [bidamontLeft,setbidamountLeft] = useState();
 
-    
 
     const BalanceBidAmount = () =>{
 
@@ -20,7 +20,7 @@ function BalanceBidAmount(props) {
         
 
         axios.post("http://localhost:3001/getBalanceBidAmount",{
-            mid: props.mid,
+            mid: mid,
             tid:teamid,
           }).then((res) => {
          if(res.data[0]){

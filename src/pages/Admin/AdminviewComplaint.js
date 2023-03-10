@@ -37,7 +37,7 @@ import Scrollbar from '../../components/Scrollbar';
 import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
 import { UserListHead, UserListToolbar} from '../../sections/@dashboard/user';
-import AddComplaint from './AddComplaint';
+import ComplaintDetails from '../Host/ComplaintDetails';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -50,8 +50,10 @@ import autoTable from 'jspdf-autotable';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'Request ID', alignRight: false },
+  { id: 'mname', label: 'Match Name', alignRight: false },
   { id: 'Reason', label: 'Reason', alignRight: false },
   { id: 'Status', label: 'Status', alignRight: false },
+  { id: '' },
   { id: '' },
 ];
 
@@ -86,23 +88,23 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function DisplayComplaint() {
+export default function Complaint() {
   const navigate = useNavigate()
   const ref = useRef(null);
 
   const handleClose = () => {
     setDialog();
   };
+
   const [USERLIST,setUserList] = useState([]);
   
   
       const display = () =>{
-        let mid = localStorage.getItem("mid");
-        let tid = localStorage.getItem("TeamID");
+        
+        let mid = localStorage.getItem("HostID");
 
-        axios.post("http://localhost:3001/reDisplay",{
+        axios.post("http://localhost:3001/AuctionRequestAdmin",{
             mid: mid,
-            tid:tid,
         }).then((res) => {
        if(res.data){
         console.log(res.data)
@@ -130,6 +132,8 @@ export default function DisplayComplaint() {
   const [order, setOrder] = useState('asc');
 
   const [selected, setSelected] = useState([]);
+
+  const [openDetails,setOpenDetails] = useState(false);
 
   const [orderBy, setOrderBy] = useState('name');
 
@@ -162,19 +166,23 @@ export default function DisplayComplaint() {
     const doc = new jsPDF(orientation, unit, size);
     
     
-    const title = "Team Details";
+    const title = "ReAuction Details";
     const headers = [[
-      "FirstName", 
-      "LastName",
-      "Username",
-      "Phone No",
+      "Request Id", 
+      "Requested Team Name",
+      "Match Name",
+      "Injured Player Name",
+      "Position",
+      "Reason"
     ]];
     
     const data = USERLIST.map(data=> [
-      data.team_fname, 
-      data.team_lname,
-      data.team_username,
-      data.team_number
+      data.reqID, 
+      data.teamname,
+      data.mname,
+      data.pname,
+      data.pos_name,
+      data.reason
     
     ]);
 
@@ -205,35 +213,16 @@ export default function DisplayComplaint() {
     doc.text(title, marginLeft, 20);
     doc.autoTable(content);
 
-    doc.setFontSize(10);
-    doc.text(40, 35, "Match Name: "+ USERLIST[0].match_fname+" "+USERLIST[0].match_lname)
+    // doc.setFontSize(10);
+    // doc.text(40, 35, "Match Name: "+ USERLIST[0].match_fname+" "+USERLIST[0].match_lname)
 
     doc.setFontSize(10);
     doc.text(40, 45, newdat)
-        doc.save('Team Details.pdf')
+        doc.save('ReAuction Details.pdf')
       }
 
 
-  const handleAdd = (e, upd = Boolean(false), button = 'ADD', data = {}) => {
-    const add = (data) => {
-      setOpen(false) ;
-      setDialog();
-      display();
-      
-    };
-    setDialog(() => (
-      <AddComplaint
-        onClose={handleClose}
-        open={open}
-         submit={add}
-         updated={upd}
-         button={button}
-         data={data}
-      />
-    ));
-    setOpen(true);
-  };
-
+  
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -248,6 +237,21 @@ export default function DisplayComplaint() {
     setFilterName(event.target.value);
   };
 
+  
+
+  const handleClickOpen = (id,row) => {
+    setDialog(
+        <ComplaintDetails 
+          onClose={handleClose}
+          open={open}
+          id={id}
+          data={row}
+        />      
+    );
+    setOpenDetails(true);
+  }
+
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
@@ -256,13 +260,12 @@ export default function DisplayComplaint() {
 
  
   const StatusMenu = (prop)=>{
-    console.log(prop);
+   
     const ref = useRef(null)
     const [isOpen, setIsOpen] = useState(false);
     const spcall = (status)=>{
-      axios.post("http://localhost:3001/TeamStatus",{
+      axios.post("http://localhost:3001/approveRequest",{
         id:  prop.aid,
-        status: status,
       }).then((res) => {
         console.log(res.data);
          display();
@@ -285,47 +288,45 @@ export default function DisplayComplaint() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-         {prop.status !== 0 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{spcall(1)}}>
+         {prop.status !== 1 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{spcall()}}>
             <ListItemIcon>
                <Iconify icon="fontisto:radio-btn-active" width={24} height={24} color='#00b300' />
             </ListItemIcon>
-            <ListItemText primary="Activate" primaryTypographyProps={{ variant: 'body2' }} />
+            <ListItemText primary="Approve" primaryTypographyProps={{ variant: 'body2' }} />
           </MenuItem>}
-          {prop.status !== 1 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{spcall(0)}}>
+          {/* {prop.status !== 0 && <MenuItem sx={{ color: 'text.secondary' }} onClick={()=>{spcall(0)}}>
             <ListItemIcon>
-               <Iconify icon="el:remove-circle" width={24} height={24}  color='#cc2900'/>
+               <Iconify icon="fontisto:radio-btn-active" width={24} height={24}  color='#cc2900'/>
             </ListItemIcon>
-            <ListItemText primary="Deactivate" primaryTypographyProps={{ variant: 'body2' }} />
-          </MenuItem>}
-          <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
-          <ListItemIcon>
-            <Iconify icon="eva:edit-fill" width={24} height={24} />
-          </ListItemIcon>
-          <ListItemText onClick={(e)=>handleAdd(e,true,'EDIT',prop.row)} primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
-        </MenuItem>
+            <ListItemText primary="Approve" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>} */}
         </Menu></>);
   }
 
 
 
   return (
-    <Page title="Team">
+    <Page title="ReAuction Details">
       <Container maxWidth="xl">
       {addDialog}
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
              Re Auction Request
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" onClick={handleAdd} startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Request
-          </Button>
         </Stack>
 
         <KeyboardBackspaceIcon sx={{cursor: "pointer"}} 
         onClick={()=>{navigate(-1)
         }} />
         <Card>
-        
+        <IconButton
+          sx={{
+            float:'right',
+            marginLeft:'30px'
+          }}
+          onClick = {genereatePdf}
+          ><Iconify icon="prime:file-pdf" width={40} height={40} /></IconButton>
+
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -342,7 +343,7 @@ export default function DisplayComplaint() {
                 <TableBody>
                   {filteredUsers && filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
     
-                   const {reqID,reason,status } = row;
+                   const {reqID,reason,status,mname,pname,pos_name,teamname} = row;
                    
                    let stst = 'Not Approved'
                   
@@ -357,6 +358,7 @@ export default function DisplayComplaint() {
                               {reqID}
                             </Typography>
                         </TableCell>
+                        <TableCell align="left">{mname}</TableCell>
                         <TableCell align="left">{reason}</TableCell>
                           <TableCell align="left">
                           <Label  color={status ? 'error' : 'success'}>
@@ -364,7 +366,17 @@ export default function DisplayComplaint() {
                           </Label>
                         </TableCell>
   
-
+                      <TableCell align="left">
+                        <Button
+                        onClick={
+                          ()=>{
+                          handleClickOpen(reqID,row)
+                        }
+                      }
+                        >
+                          view
+                        </Button>
+                      </TableCell>
                         <TableCell align="right" >
                        
                         </TableCell>
