@@ -100,6 +100,9 @@ export default function PlayerRegister() {
     Mobnum: Yup.string().matches(phoneRegExp, 'Not a valid Phone Number').max(10).required('Mobile is required'),
     password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
     selectpos: Yup.string().required("Position Should be selected!"),
+    pvclub: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Previous Club should be Specified!'),
+    exp: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Experience is required'),
+    about: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('About is required'),
     
   });
 
@@ -110,7 +113,10 @@ export default function PlayerRegister() {
       lname:  '',
       Mobnum:  '',
       password:  '',
-      selectpos:'',
+      selectpos: '',
+      about: '',
+      pvclub: '',
+      exp: ''
     },
     validationSchema: validSchema,
     onSubmit: (values, actions) => {
@@ -170,6 +176,9 @@ const convertBase64 =  (filename) =>{
       base64v: base64value,
       pos: values.selectpos,
       match:id,
+      exp:values.exp,
+      pvclub:values.pvclub,
+      about:values.about,
       
     }).then((response) =>{
       console.log(response.data[0][0]);
@@ -302,7 +311,7 @@ const getAmt = () => {
           onChange={(e)=>{
             handleFileUpload(e);
           }}
-          required
+          required="true"
           />
            </FormControl>
         <IconButton color="primary" aria-label="upload picture"
@@ -348,7 +357,30 @@ const getAmt = () => {
         </Select>
       </FormControl>
 
-      
+      <TextField type="text" name="exp" label="Experience" 
+         required
+         {...getFieldProps('exp')}
+         helperText={touched.exp && errors.exp}
+         error={Boolean(touched.exp && errors.exp)}
+         />
+        
+        <TextField type="text" name="exp" label="Previous Club" 
+         required
+         {...getFieldProps('pvclub')}
+         helperText={touched.pvclub && errors.pvclub}
+         error={Boolean(touched.pvclub && errors.pvclub)}
+         />
+
+        <TextField
+          id="outlined-multiline-static"
+          label="About You"
+          multiline
+          rows={4}
+          {...getFieldProps('about')}
+         helperText={touched.about && errors.about}
+         error={Boolean(touched.about && errors.about)}
+        />
+
 
       </Stack>
 
@@ -362,7 +394,7 @@ const getAmt = () => {
       { error===false && 
       <LoadingButton fullWidth size="small" type="button" variant="contained"
       onClick={
-       (e)=>{ 
+       ()=>{ 
          
          handleSubmit()
        }

@@ -54,7 +54,7 @@ export const TeamViewPlayer = (props) => {
                     >
                     {
                         USERLIST.map((data)=>{
-                            const {player_img,player_fname,Player_lname,pos_name,bidstatus} = data;
+                            const {player_img,player_fname,Player_lname,pos_name,bidstatus,previousClub,exp,aboutme} = data;
                             let stst = 'Available'
                   
                                 if(bidstatus === 1){
@@ -76,7 +76,7 @@ export const TeamViewPlayer = (props) => {
                                             <Stack direction='row' sx={{ justifyContent: 'center'}}>
                                                 <Typography variant="body2" style={{ color: '#555' }}>
                                                 {/* {player.player_fname +" " +player.Player_lname} */}
-                                                Name: {player_fname +" " +Player_lname}
+                                                Name: {player_fname +" "+Player_lname}
                                                 </Typography>
                                             </Stack>
                                             <Stack direction='row' sx={{ justifyContent: 'center'}}>
@@ -86,12 +86,17 @@ export const TeamViewPlayer = (props) => {
                                             </Stack>
                                             <Stack direction='row' sx={{ justifyContent: 'center'}}>
                                                 <Typography variant="body2" style={{ color: '#555' }}>
-                                                   Experience: 
+                                                   Experience: {exp}
                                                 </Typography>
                                             </Stack>
                                             <Stack direction='row' sx={{ justifyContent: 'center'}}>
                                                 <Typography variant="body2" style={{ color: '#555' }}>
-                                                   Previous Club:
+                                                   Previous Club: {previousClub}
+                                                </Typography>
+                                            </Stack>
+                                            <Stack direction='row' sx={{ justifyContent: 'space-around'}}>
+                                                <Typography variant="body2" style={{ color: '#555' }}>
+                                                   About: {aboutme}
                                                 </Typography>
                                             </Stack>
                                             <Label 

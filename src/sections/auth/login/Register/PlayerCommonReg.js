@@ -192,7 +192,10 @@ const getMatch = () =>{
       base64v: base64value,
       pos: values.selectpos,
       match:values.selectmatch,
-      
+      exp:values.exp,
+      pvclub:values.pvclub,
+      about:values.about,
+
     }).then((response) =>{
       console.log(response.data[0][0]);
       if(response.data[0][0].status === 0){        
@@ -315,7 +318,8 @@ const getAmt = () => {
           }}
         />
        
-        <label htmlFor="icon-button-file" >
+        <label htmlFor="icon-button-file">
+          Your Photo: 
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
         <input name="photo"
         label="Upload Image"
@@ -325,7 +329,7 @@ const getAmt = () => {
           onChange={(e)=>{
             handleFileUpload(e);
           }}
-          required
+          required="true"
           />
            </FormControl>
         <IconButton color="primary" aria-label="upload picture"

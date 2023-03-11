@@ -179,6 +179,17 @@ export default function MatchesAuction() {
   //   )
   // }
 
+  const startAuction = (id) => {
+    axios.post("http://localhost:3001/updateMstatus",{
+      id:id,
+    }).then((res) => {
+      display(); 
+   }).catch((error) => {
+      console.log(error);
+        console.log('No internet connection found. App is running in offline mode.');
+      });
+ }
+
 
   return (
     <Page title="Auctions Available">
@@ -244,6 +255,21 @@ export default function MatchesAuction() {
                                 View Auction Details
                               </Button>
                            </TableCell>
+
+                           {bstatus===1 &&
+                           <TableCell component="th" scope="row" sx={{cursor: "pointer"}}>
+                              <Button
+                              variant='contained'
+                              onClick={()=>{
+                                console.log('Start Auction');  
+                                startAuction(match_id)        
+                              }}
+                              >
+                                Start Auction
+                              </Button>
+                           </TableCell>
+                          }
+                            
                       </TableRow>
                     );
                   })}

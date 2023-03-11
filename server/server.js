@@ -158,7 +158,7 @@ const conn = mysql.createConnection({
         (err,result) => {
     
                 if(err){
-                    conosle.log(err);
+                    console.log(err);
                 }
     
                 if(result.length > 0 ) {
@@ -181,7 +181,7 @@ const conn = mysql.createConnection({
     (err,result) => {
 
             if(err){
-                conosle.log(err);
+                console.log(err);
             }
 
             if(result.length > 0 ) {
@@ -203,7 +203,7 @@ const conn = mysql.createConnection({
     (err,result) => {
 
             if(err){
-                conosle.log(err);
+                console.log(err);
             }
 
             if(result.length > 0 ) {
@@ -224,7 +224,7 @@ const conn = mysql.createConnection({
         (err,result) => {
 
                 if(err){
-                    conosle.log(err);
+                    console.log(err);
                 }
 
                 if(result.length > 0 ) {
@@ -245,7 +245,7 @@ const conn = mysql.createConnection({
         (err,result) => {
 
                 if(err){
-                    conosle.log(err);
+                    console.log(err);
                 }
 
                 if(result.length > 0 ) {
@@ -312,7 +312,7 @@ const conn = mysql.createConnection({
         (err,result) => {
 
                 if(err){
-                    conosle.log(err);
+                    console.log(err);
                 }else if(result.length > 0 ) {
                     console.log(result);
                     res.send(result);
@@ -369,7 +369,7 @@ const conn = mysql.createConnection({
         (err,result) => {
 
                 if(err){
-                    conosle.log(err);
+                    console.log(err);
                 }
 
                 if(result.length > 0 ) {
@@ -381,12 +381,34 @@ const conn = mysql.createConnection({
         });
     });
 
+    // updateMstatus
+
+    app.post('/updateMstatus',(req,res)=>{
+
+        const id = req.body.id;
+        conn.query("call updateMatchStatus(?)",
+        [id],
+        (err,result) => {
+
+                if(err){
+                    console.log(err);
+                }else if(result.length > 0 ) {
+                    console.log(result);
+                    res.send("y");
+                }else{
+                    console.log("Something went Wrong!");
+                }
+        });
+    });
+
+
+
     // get Registration status 
 
     app.post('/getStatusTeam',(req,res)=>{
 
         const id = req.body.id;
-        conn.query("select team_reg_status from tbl_match where match_id = ?",
+        conn.query("select team_reg_status from tbl_match where match_id=?",
         [id],
         (err,result) => {
 
@@ -403,6 +425,7 @@ const conn = mysql.createConnection({
         });
     });
 
+
     // player Registration 
     app.post('/playerreg', (req,res) => {
 
@@ -414,15 +437,18 @@ const conn = mysql.createConnection({
         const position = req.body.pos;
         const Number = req.body.phoneNo;
         const matchid = req.body.match;
+        const exp = req.body.exp;
+        const pvclub = req.body.pvclub;
+        const about = req.body.about;
+
     
-        conn.query("call playerReg(?,?,?,?,?,?,?,?)",
-            [username,password,fname,lname,position,base64v,Number,matchid],
+        conn.query("call playerReg(?,?,?,?,?,?,?,?,?,?,?)",
+            [username,password,fname,lname,position,base64v,Number,matchid,exp,pvclub,about],
                 (err,result) => {
                     //res.send(result)
                     if(err){ 
                         console.log(err);
-                    }
-                    if(result.length > 0){
+                    }else if(result.length > 0){
                         console.log(result);
                         res.send(result);
                         // res.send({message:0}); 
