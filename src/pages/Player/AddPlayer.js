@@ -15,8 +15,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { reject } from 'lodash';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import Avatar from '@mui/material/Avatar';
-import MatchDetails from '../Match/MatchDetails';
 
 
 
@@ -50,6 +48,9 @@ export default function AddPlayer(details) {
     password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
     selectpos : Yup.string().required('select position'),
     selectmatch : Yup.string().required('select match'),
+    pvclub: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Previous Club should be Specified!'),
+    exp: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Experience is required'),
+    about: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('About is required'),
   });
 
 
@@ -67,7 +68,11 @@ export default function AddPlayer(details) {
       selectpos: update ?  details.data.pos_id : '',
       selectmatch : update ? details.data.match_id : '',
       // image: update ? details.data.player_img : '',
+      about: '',
+      pvclub: '',
+      exp: '',
       userType: type
+
     },
     validationSchema: validSchema,
     onSubmit: (values, actions) => {
@@ -118,14 +123,7 @@ console.log(formik);
     
 
 const UpdatePlayer = () => {
-  console.log(values.username);
-    console.log(values.password);
-    console.log(values.fname);
-    console.log(values.lname);
-    console.log(values.Mobnum);
-    console.log(values.selectpos);
-    console.log(details.data.mid);
-    console.log(details.data.player_id);
+  
 
     Axios.post("http://localhost:3001/playerUpdate", {
 
@@ -156,14 +154,7 @@ const UpdatePlayer = () => {
 
   const insertPlayer = () => {
     
-    console.log(values.username);
-    console.log(values.password);
-    console.log(values.fname);
-    console.log(values.lname);
-    console.log(values.Mobnum);
-    console.log(base64value);
-    console.log(values.selectpos);
-    console.log(values.selectMatch);
+   
 
     Axios.post("http://localhost:3001/playerreg", {
 
@@ -175,6 +166,9 @@ const UpdatePlayer = () => {
       base64v: base64value,
       pos: values.selectpos,
       match:values.selectmatch,
+      exp:values.exp,
+      pvclub:values.pvclub,
+      about:values.about,
       
     }).then((response) =>{
       console.log(response.data[0][0]);
@@ -412,7 +406,35 @@ const UpdatePlayer = () => {
           })}
         </Select>
       </FormControl>
-          
+      
+     {!update && 
+     <>
+     <TextField type="text" name="exp" label="Experience" 
+         required
+         {...getFieldProps('exp')}
+         helperText={touched.exp && errors.exp}
+         error={Boolean(touched.exp && errors.exp)}
+         />
+        
+        <TextField type="text" name="exp" label="Previous Club" 
+         required
+         {...getFieldProps('pvclub')}
+         helperText={touched.pvclub && errors.pvclub}
+         error={Boolean(touched.pvclub && errors.pvclub)}
+         />
+
+        <TextField
+          id="outlined-multiline-static"
+          label="About You"
+          multiline
+          rows={4}
+          {...getFieldProps('about')}
+         helperText={touched.about && errors.about}
+         error={Boolean(touched.about && errors.about)}
+        />
+     </>
+     }
+
           </Stack>
         </Container>
       </Dialog>

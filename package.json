@@ -75,6 +75,7 @@
     "date-fns": "^2.28.0",
     "dayjs": "^1.11.7",
     "electron": "^23.1.0",
+    "email-js": "^2.0.2",
     "file-saver": "^2.0.5",
     "firebase": "^9.17.1",
     "formik": "^2.2.9",

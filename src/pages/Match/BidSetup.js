@@ -207,7 +207,7 @@ export default function BidSetup() {
   }
    </Grid>
 
-{  Status===false &&
+{ msg &&
           <div>
               <Typography
               variant='h4'
