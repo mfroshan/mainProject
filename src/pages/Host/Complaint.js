@@ -53,6 +53,7 @@ const TABLE_HEAD = [
   { id: 'mname', label: 'Match Name', alignRight: false },
   { id: 'Reason', label: 'Reason', alignRight: false },
   { id: 'Status', label: 'Status', alignRight: false },
+  { id: '' ,label:'ReFund Status',alignRight:false},
   { id: '' },
   { id: '' },
 ];
@@ -343,12 +344,18 @@ export default function Complaint() {
                 <TableBody>
                   {filteredUsers && filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
     
-                   const {reqID,reason,status,mname,pname,pos_name,teamname} = row;
+                   const {reqID,reason,status,mname,pname,pos_name,teamname,refund_S} = row;
                    
                    let stst = 'Not Approved'
                   
                    if(status === 1){
                      stst = 'Approved'
+                   }
+
+                   let rfstst = "Not Refunded"
+
+                   if(refund_S === 1){
+                    rfstst = 'ReFunded'
                    }
                    
                     return (
@@ -361,8 +368,13 @@ export default function Complaint() {
                         <TableCell align="left">{mname}</TableCell>
                         <TableCell align="left">{reason}</TableCell>
                           <TableCell align="left">
-                          <Label  color={status ? 'error' : 'success'}>
+                          <Label  color={status ? 'success': 'error'}>
                             {stst}
+                          </Label>
+                        </TableCell>
+                        <TableCell align="left">
+                          <Label  color={refund_S?  'success' : 'error'}>
+                            {rfstst}
                           </Label>
                         </TableCell>
   

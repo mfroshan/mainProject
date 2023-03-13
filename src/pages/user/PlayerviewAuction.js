@@ -4,7 +4,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Paper from '@mui/material/Paper';
 import Item from '@mui/material/ListItem';
 import CardContent from '@mui/material/CardContent';
-// import Timer from './Timer';
+import Timer from '../auction/Timer';
 
 import axios from 'axios';
 import io from 'socket.io-client';
@@ -13,6 +13,8 @@ var socket;
 
 export const PlayerViewAuction = (props) => {
 
+    console.log(props);
+    
     const [ amt , lastAmt] = useState('');
 
     const [displayname, setdisplayName] = useState();
@@ -47,6 +49,9 @@ export const PlayerViewAuction = (props) => {
           });
     }
 
+    const timerCallback = () => {
+    
+    }
 
     useEffect(() => {
 
@@ -84,7 +89,7 @@ export const PlayerViewAuction = (props) => {
                     </Typography>
 
                                         
-                    {/* <Timer /> */}
+                    {timerTime && <Timer  maxTime={timerTime} callback={timerCallback}/>}
                     
                     <Grid container
                      direction="column"
