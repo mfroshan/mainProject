@@ -57,7 +57,7 @@ export default function Profile(props) {
             tid:teamid,
           }).then((res) => {
          if(res.data[0]){
-            console.log(res.data[0][0].amount);
+            
             setbidamountLeft(res.data[0][0].amount);
             }else{
                 setbidamountLeft(0);
@@ -79,7 +79,7 @@ export default function Profile(props) {
           }).then((res) => {
             console.log(res.data)
             if (res.data[1][0].status === 0) {
-              console.log(res.data[0])
+              
               setmid(res.data[0][0].mid);
               localStorage.setItem("mid",res.data[0][0].mid);
               localStorage.setItem("fname",res.data[0][0].fname);
@@ -88,13 +88,29 @@ export default function Profile(props) {
               if(res.data[0][0].img !== null){
                 setImg(res.data[0][0].img);
               }
-              BalanceBidAmount();
+              
             }
           })
       }
 
+      const [Team,setTeam]= useState([]);
+
+      const TeamCheck = () => {
+        const playerid = localStorage.getItem("PlayerID");
+        axios.post("http://localhost:3001/teamCheck",{
+        pid: playerid,
+      }).then((res) => {
+        if (res.data[0]) {
+          console.log(res.data[0])
+          setTeam(res.data[0]);
+        }
+        console.log(Team);
+      });
+      }
+
       useEffect(() => {
         request();
+        TeamCheck();
       }, [])
 
 
@@ -342,6 +358,20 @@ export default function Profile(props) {
                                        {datas && datas.email}
                                     </Typography>
                                 </Stack>
+                               
+                               { Team.length > 0 &&
+                               
+                          
+                                <Stack direction='row' sx={{ justifyContent: 'space-between', padding: 2 }}>
+                                    <Typography variant="h6" style={{ color: '#555' }}>
+                                        You are Auctioned By Team
+                                    </Typography>
+                                    <Typography variant="body2" style={{ color: '#555' }}>
+                                       {Team && Team[0].teamname}
+                                    </Typography>
+                                </Stack>
+                                }
+
                             </Card>
                         </Grid>
                     </Grid>

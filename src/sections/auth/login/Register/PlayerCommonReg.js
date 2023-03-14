@@ -57,6 +57,8 @@ export default function PlayerCommonReg() {
   
   const [MacthDetails, setMacthDetails ] = useState([]);
 
+  const [base64cert,setBase64Certificate] = useState('');
+
   const [amt , setAmt] = useState();
 
   // const handleChange = () => {
@@ -69,6 +71,37 @@ export default function PlayerCommonReg() {
 
 
   // };
+
+  const handlecertificateUpload = async (e) => {
+    const filename = e.target.files[0];
+  
+    setFilename(e.target.files.data);
+    console.log(e.target.files[0]);
+  
+    const base64c  = await convertCertBase64(filename);
+     console.log(base64c);
+  
+    setBase64Certificate(base64c);
+    console.log(base64cert);
+  }
+  
+  const convertCertBase64 =  (filename) =>{
+      return new Promise((resolve,object) => {
+        const fileReader = new FileReader();
+        
+        fileReader.readAsDataURL(filename)
+  
+        fileReader.onload = () =>{
+          resolve(fileReader.result);
+        };
+  
+        fileReader.onerror = (error)=>{
+          reject(error);
+        }
+      })
+  }
+  
+
   
   let { id } = useParams();
 
@@ -103,7 +136,7 @@ export default function PlayerCommonReg() {
     selectmatch:Yup.string().required("Match Should be Selected!"),
     pvclub: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Previous Club should be Specified!'),
     exp: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Experience is required'),
-    about: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('About is required'),
+    
   });
 
   const formik = useFormik({
@@ -115,7 +148,7 @@ export default function PlayerCommonReg() {
       password:  '',
       selectpos:'',
       selectmatch:'',
-      about: '',
+      
       pvclub: '',
       exp: '',
     },
@@ -194,7 +227,7 @@ const getMatch = () =>{
       match:values.selectmatch,
       exp:values.exp,
       pvclub:values.pvclub,
-      about:values.about,
+      cert:base64cert,
 
     }).then((response) =>{
       console.log(response.data[0][0]);
@@ -413,15 +446,26 @@ const getAmt = () => {
          error={Boolean(touched.pvclub && errors.pvclub)}
          />
 
-        <TextField
-          id="outlined-multiline-static"
-          label="About You"
-          multiline
-          rows={4}
-          {...getFieldProps('about')}
-         helperText={touched.about && errors.about}
-         error={Boolean(touched.about && errors.about)}
+        <label htmlFor="icon-button-file">Certificates:
+      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+      <input name="Certificate"
+      label="Upload certificate"
+      accept="image/*"
+        id="icon-button-file"
+        type="file" 
+        onChange={(e)=>{
+          handlecertificateUpload(e);
+        }} 
+        required
         />
+         </FormControl>
+      <IconButton color="primary" aria-label="upload certificate"
+      component="span"
+      style={{float:'right'}} >
+        <PhotoCamera />
+      </IconButton>
+     
+    </label>
 
       </Stack>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>

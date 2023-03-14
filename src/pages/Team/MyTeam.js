@@ -14,6 +14,7 @@ export const MyTeam = (props) => {
 
 
     const display = () => {
+
         const  mid = localStorage.getItem("mid");
         const tid = localStorage.getItem("TeamID");
 
@@ -56,7 +57,7 @@ export const MyTeam = (props) => {
                     >
                     {
                         USERLIST.map((data)=>{
-                            const {player_img,player_fname,Player_lname,pos_name,bidstatus} = data;
+                            const {player_img,player_fname,Player_lname,pos_name,exp,previousClub} = data;
                             
 
                                 return(
@@ -84,12 +85,12 @@ export const MyTeam = (props) => {
                                             </Stack>
                                             <Stack direction='row' sx={{ justifyContent: 'center'}}>
                                                 <Typography variant="body2" style={{ color: '#555' }}>
-                                                   Experience: 
+                                                   Experience: {exp} 
                                                 </Typography>
                                             </Stack>
                                             <Stack direction='row' sx={{ justifyContent: 'center'}}>
                                                 <Typography variant="body2" style={{ color: '#555' }}>
-                                                   Previous Club:
+                                                   Previous Club: {previousClub}
                                                 </Typography>
                                             </Stack>
                                             

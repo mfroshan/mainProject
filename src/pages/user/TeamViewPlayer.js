@@ -7,16 +7,38 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Label from '../../components/label';
 import BalanceBidAmount from '../BalanceBidAmount';
-
+import ViewCert from './VierwCert';
 
 export const TeamViewPlayer = (props) => {
    
 
-    const [ USERLIST ,setUserList ] = useState([]);   
-
     const navigate = useNavigate();
 
+    const [ USERLIST ,setUserList ] = useState([]); 
 
+    const [open, setOpen] = useState(true);
+
+    const [addDialog, setDialog] = useState();
+
+    const [certificate, setcertificate] = useState(false);
+
+    const handleClose = () => {
+        setDialog();
+      };
+
+      const handleClickOpen = (cert,name) => {
+        setDialog(
+            <ViewCert 
+              onClose={handleClose}
+              open={open}
+              cert={cert}
+              name={name}
+            />      
+        );
+        setcertificate(true);
+      }
+
+      
     const display = () => {
         const  mid = localStorage.getItem("mid");
         axios.post("http://localhost:3001/playerdisplay",{
@@ -42,7 +64,7 @@ export const TeamViewPlayer = (props) => {
 
   return (
          <Container maxWidth="xl">
-            
+            {addDialog}
                     <Typography variant="h4" sx={{ mb: 5 }}>
                         Player Registered For Auction
                     </Typography>
@@ -94,11 +116,7 @@ export const TeamViewPlayer = (props) => {
                                                    Previous Club: {previousClub}
                                                 </Typography>
                                             </Stack>
-                                            <Stack direction='row' sx={{ justifyContent: 'space-around'}}>
-                                                <Typography variant="body2" style={{ color: '#555' }}>
-                                                   About: {aboutme}
-                                                </Typography>
-                                            </Stack>
+                                            
                                             <Label 
                                              sx={{
                                                 float:'right',
@@ -108,7 +126,20 @@ export const TeamViewPlayer = (props) => {
                                              color={bidstatus ? 'error' : 'success'}>
                                                             {stst}
                                                         </Label>
+                                            <Button
+                                            sx={{
+                                            marginBottom:'10px'
+                                             }}
+                                             onClick={()=>{
+                                                handleClickOpen(aboutme,player_fname +" "+Player_lname);
+                                                
+                                             }}
+                                            >
+                                                View Certificate
+                                            </Button>
+
                                             </CardContent>
+                                            
                                         </Card>
                                     </Grid>
 

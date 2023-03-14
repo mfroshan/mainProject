@@ -439,11 +439,11 @@ const conn = mysql.createConnection({
         const matchid = req.body.match;
         const exp = req.body.exp;
         const pvclub = req.body.pvclub;
-        const about = req.body.about;
+        const cert = req.body.cert;
 
     
         conn.query("call playerReg(?,?,?,?,?,?,?,?,?,?,?)",
-            [username,password,fname,lname,position,base64v,Number,matchid,exp,pvclub,about],
+            [username,password,fname,lname,position,base64v,Number,matchid,exp,pvclub,cert],
                 (err,result) => {
                     //res.send(result)
                     if(err){ 
@@ -1022,6 +1022,27 @@ const conn = mysql.createConnection({
 
     });
 
+
+    // player in which team 
+
+    app.post('/teamCheck',(req,res)=>{
+        
+        const pid = req.body.pid;
+        
+        conn.query("call teamcheck(?)",
+        [pid],
+        (err,result)=>{
+            if(err){
+                console.log(err);
+            }else if(result.length > 0){
+                console.log(result);
+                res.send(result);
+            }else{
+                console.log("No data!");
+            }
+        });
+
+    });
 
     // Display all player
 
