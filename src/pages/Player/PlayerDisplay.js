@@ -212,8 +212,13 @@ export default function PlayerDisplay() {
 
     doc.setFontSize(10);
     doc.text(40, 45, newdat)
-        doc.save('Player Details.pdf')
-      }
+
+    doc.page=1;
+
+    doc.text(500,200, 'Page No:' + doc.page);
+
+    doc.save('Player Details.pdf');
+  }
   
 
   const handleAdd = (e, upd = Boolean(false), button = 'ADD', data = {}) => {
@@ -261,7 +266,7 @@ export default function PlayerDisplay() {
     const ref = useRef(null)
     const [isOpen, setIsOpen] = useState(false);
     setID(prop.aid);
-    // setpusername(prop.Username);
+  
     
     const Activatecall = () =>{
       axios.post("http://localhost:3001/activatePlayer",{

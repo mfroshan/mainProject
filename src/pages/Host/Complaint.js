@@ -219,6 +219,10 @@ export default function Complaint() {
 
     doc.setFontSize(10);
     doc.text(40, 45, newdat)
+    doc.page=1;
+
+    doc.text(500,200, 'Page No:' + doc.page);
+
         doc.save('ReAuction Details.pdf')
       }
 

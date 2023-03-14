@@ -189,7 +189,7 @@ export default function AdminViewPlayer() {
   const size = "A4"; 
   const orientation = "portrait"; 
 
-const marginLeft = 40;
+const marginLeft = 200;
 const doc = new jsPDF(orientation, unit, size);
 
 
@@ -234,11 +234,16 @@ let content = {
   body: data
 };
 
-doc.text(title, marginLeft, 20);
+    doc.textFontSize(30);
+    doc.text(title, marginLeft, 20);
     doc.autoTable(content);
 
     doc.setFontSize(10);
     doc.text(40, 40, newdat)
+
+    doc.page=1;
+    doc.text(500,200, 'Page No:' + doc.page);
+
 
 doc.save("PlayerDetails.pdf")
   }

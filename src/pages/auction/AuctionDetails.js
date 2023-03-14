@@ -177,7 +177,7 @@ export default function AuctionDetails() {
     const size = "A4"; // Use A1, A2, A3 or A4
     const orientation = "portrait"; // portrait or landscape
     
-    const marginLeft = 40;
+    const marginLeft = 200;
     const doc = new jsPDF(orientation, unit, size);
     
     
@@ -221,6 +221,7 @@ export default function AuctionDetails() {
       body: data
     };
     
+        doc.setFontSize(20);
         doc.text(title, marginLeft, 20);
         doc.autoTable(content);
 
@@ -229,6 +230,10 @@ export default function AuctionDetails() {
 
         doc.setFontSize(10);
         doc.text(40, 45, newdat)
+        doc.page=1;
+
+        doc.text(500,200, 'Page No:' + doc.page);
+
         doc.save('Auction Details.pdf')
       }
 

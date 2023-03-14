@@ -4,10 +4,13 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import axios from 'axios';
 import BalanceBidAmount from '../BalanceBidAmount';
+import jsPDF from 'jspdf';
+import Iconify from '../../components/iconify';
+import IconButton from '@mui/material/IconButton';
 
 
 
-export const MyTeam = (props) => {
+export const MyTeam = () => {
    
 
     const [ USERLIST ,setUserList ] = useState([]);   
@@ -15,7 +18,7 @@ export const MyTeam = (props) => {
 
     const display = () => {
 
-        const  mid = localStorage.getItem("mid");
+        const mid = localStorage.getItem("mid");
         const tid = localStorage.getItem("TeamID");
 
         axios.post("http://localhost:3001/myTeamDisplay",{
@@ -40,7 +43,73 @@ export const MyTeam = (props) => {
     
         },[])
 
+        const genereatePdf = () => {
+
+            const unit = "pt";
+            const size = "A4"; // Use A1, A2, A3 or A4
+            const orientation = "portrait"; // portrait or landscape
+            
+            const marginLeft = 40;
+            const doc = new jsPDF(orientation, unit, size);
+            
+            
+            const title = `list of Player under ${localStorage.getItem("fname") +" " + localStorage.getItem("lname")} `;
+            const headers = [[
+              "Player FirstName", 
+              "Player LastName",
+              "Position",
+              "Auctioned Price",
+            ]];
+            
+            const data = USERLIST.map(data=> [
+              data.player_fname, 
+              data.Player_lname,
+              data.pos_name,
+              data.price
+            
+            ]);
         
+            var today = new Date();
+            var dd = today.getDate();
+            
+            var mm = today.getMonth()+1; 
+            var yyyy = today.getFullYear();
+            if(dd<10) 
+            {
+                dd='0'+dd;
+            } 
+            
+            if(mm<10) 
+            {
+                mm='0'+mm;
+            } 
+            today = mm+'-'+dd+'-'+yyyy;
+        
+            var newdat = "Date of Report Generated  : "+ today;
+        
+            let content = {
+              startY: 50,
+              head: headers,
+              body: data
+            };
+            
+            doc.text(title, marginLeft, 20);
+            doc.autoTable(content);
+        
+            doc.setFontSize(10);
+            doc.text(40, 35, "Match Name:"+ USERLIST[0].mname)
+        
+            doc.setFontSize(10);
+            doc.text(40, 45, newdat)
+
+            doc.page=1;
+
+            doc.text(500,200, 'Page No:' + doc.page);
+
+                doc.save('MyTeam Details.pdf')
+                
+              }
+          
     
 
   return (
@@ -50,14 +119,25 @@ export const MyTeam = (props) => {
                         My Team
                     </Typography>
                     <BalanceBidAmount />
+                    <IconButton
+                        sx={{
+                            float:'left',
+                            marginLeft:'30px'
+                        }}
+                        onClick = {genereatePdf}
+                        >
+            <Iconify icon="prime:file-pdf" width={30} height={30} /></IconButton>
+
                     <Grid 
                       container
                       display='flex'
                       spacing={2}
                     >
+                        
+                    
                     {
                         USERLIST.map((data)=>{
-                            const {player_img,player_fname,Player_lname,pos_name,exp,previousClub} = data;
+                            const {player_img,player_fname,Player_lname,pos_name,exp,previousClub,price} = data;
                             
 
                                 return(
@@ -93,7 +173,11 @@ export const MyTeam = (props) => {
                                                    Previous Club: {previousClub}
                                                 </Typography>
                                             </Stack>
-                                            
+                                            <Stack direction='row' sx={{ justifyContent: 'center'}}>
+                                                <Typography variant="body2" style={{ color: '#555' }}>
+                                                   Autioned Price: {price}
+                                                </Typography>
+                                            </Stack>
                                             </CardContent>
                                         </Card>
                                     </Grid>

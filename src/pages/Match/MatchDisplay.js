@@ -36,6 +36,7 @@ import Iconify from '../../components/iconify';
 import SearchNotFound from '../../components/SearchNotFound';
 import { UserListHead, UserListToolbar } from '../../sections/@dashboard/user';
 import AddMatch from './AddMatch';
+import jsPDF from 'jspdf';
 // import requestPost from '../serviceWorker';
 // mock
 // import USERLIST from '../_mock/user';
@@ -191,6 +192,74 @@ export default function MatchDisplay() {
   const isUserNotFound = filteredUsers.length === 0;
 
  
+  const genereatePdf = () => {
+
+    const unit = "pt";
+    const size = "A4"; 
+    const orientation = "portrait"; 
+    
+    const marginLeft = 200;
+    const doc = new jsPDF(orientation, unit, size);
+    
+    
+    const title = `Match Details`;
+    const headers = [[
+      "Match Name ", 
+      "Category",
+      "Team Registration Fee",
+      "Player Registration Fee",
+      "Total Bid Amout",
+    ]];
+    
+    const data = USERLIST.map(data=> [
+      data.matchfname +" "+ data.matchlname, 
+      data.cname,
+      data.treg_fee,
+      data.preg_fee,
+      data.tbid_amt,
+    ]);
+
+    var today = new Date();
+    var dd = today.getDate();
+    
+    var mm = today.getMonth()+1; 
+    var yyyy = today.getFullYear();
+    if(dd<10) 
+    {
+        dd='0'+dd;
+    } 
+    
+    if(mm<10) 
+    {
+        mm='0'+mm;
+    } 
+    today = mm+'-'+dd+'-'+yyyy;
+
+    var newdat = "Date of Report Generated  : "+ today;
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data
+    };
+    
+        doc.setFontSize(20);
+        doc.text(title, marginLeft, 20);
+        doc.autoTable(content);
+
+        doc.setFontSize(10);
+        doc.text(40, 35, `Host Name: ${localStorage.getItem("fname") + " " + localStorage.getItem("lname")}`)
+
+        doc.setFontSize(10);
+        doc.text(40, 45, newdat)
+        doc.page=1;
+
+        doc.text(500,200, 'Page No:' + doc.page);
+
+        doc.save('Match Details.pdf')
+      }
+
+
   const StatusMenu = (prop)=>{
     const ref = useRef(null)
     const [isOpen, setIsOpen] = useState(false);
@@ -286,6 +355,13 @@ export default function MatchDisplay() {
         </Stack>
 
         <Card>
+        <IconButton
+          sx={{
+            float:'right',
+            marginLeft:'30px'
+          }}
+          onClick = {genereatePdf}
+          ><Iconify icon="prime:file-pdf" width={40} height={40} /></IconButton>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>

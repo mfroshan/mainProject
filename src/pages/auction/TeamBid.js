@@ -204,7 +204,7 @@ export default function  TeamBid (props) {
                 }
                 const timerCallback = () => {
                     
-                    props.display();
+                    
                 }
 
                 console.log(timerTime)
