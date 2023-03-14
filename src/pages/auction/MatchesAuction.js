@@ -167,21 +167,11 @@ export default function MatchesAuction() {
 
   const isUserNotFound = filteredUsers.length === 0;
 
-  // const StatusMenu = (props) => {
-    
-  //   return(
-  //     <>
-  //   {
-  //     props.bstatus===1 &&
-        
-  //     }
-  //     </>
-  //   )
-  // }
-
-  const startAuction = (id) => {
+ 
+  const startAuction = (id,sts) => {
     axios.post("http://localhost:3001/updateMstatus",{
       id:id,
+      sts:sts,
     }).then((res) => {
       display(); 
    }).catch((error) => {
@@ -241,7 +231,7 @@ export default function MatchesAuction() {
                                 </Button>
                            </TableCell>
                       
-                           <TableCell component="th" scope="row" sx={{cursor: "pointer"}}>
+                           <TableCell scope="row" sx={{cursor: "pointer"}}>
                             {/* <StatusMenu matchid={match_id} bstatus={bstatus}/> */}
                             <Button
                               variant='contained'
@@ -257,19 +247,33 @@ export default function MatchesAuction() {
                            </TableCell>
 
                            {bstatus===1 &&
-                           <TableCell component="th" scope="row" sx={{cursor: "pointer"}}>
+                           <TableCell scope="row" sx={{cursor: "pointer"}}>
                               <Button
                               variant='contained'
+                              color="success"
                               onClick={()=>{
                                 console.log('Start Auction');  
-                                startAuction(match_id)        
+                                startAuction(match_id,bstatus)        
                               }}
                               >
                                 Start Auction
                               </Button>
                            </TableCell>
                           }
-                            
+                            {bstatus===0 &&
+                           <TableCell  scope="row" sx={{cursor: "pointer"}}>
+                              <Button
+                              variant='contained'
+                              color="error"
+                              onClick={()=>{
+                                console.log('Start Auction');  
+                                startAuction(match_id,bstatus)        
+                              }}
+                              >
+                                Close Auction
+                              </Button>
+                           </TableCell>
+                          }
                       </TableRow>
                     );
                   })}

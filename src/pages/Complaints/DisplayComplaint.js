@@ -97,12 +97,13 @@ export default function DisplayComplaint() {
   
   
       const display = () =>{
-        let mid = localStorage.getItem("mid");
-        let tid = localStorage.getItem("TeamID");
+
+        const  mid = localStorage.getItem("mid");
+        const  tid = localStorage.getItem("TeamID");
 
         axios.post("http://localhost:3001/reDisplay",{
             mid: mid,
-            tid:tid,
+            tid: tid,
         }).then((res) => {
        if(res.data){
         console.log(res.data)
@@ -218,8 +219,7 @@ export default function DisplayComplaint() {
     const add = (data) => {
       setOpen(false) ;
       setDialog();
-      display();
-      
+       display();
     };
     setDialog(() => (
       <AddComplaint

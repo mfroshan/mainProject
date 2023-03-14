@@ -93,7 +93,7 @@ export default function Profile(props) {
           })
       }
 
-      const [Team,setTeam]= useState([]);
+      const [Team,setTeam]= useState();
 
       const TeamCheck = () => {
         const playerid = localStorage.getItem("PlayerID");
@@ -101,8 +101,8 @@ export default function Profile(props) {
         pid: playerid,
       }).then((res) => {
         if (res.data[0]) {
-          console.log(res.data[0])
-          setTeam(res.data[0]);
+          console.log(res.data[0][0]===0)
+          setTeam(res.data[0][0].teamname);
         }
         console.log(Team);
       });
@@ -359,7 +359,7 @@ export default function Profile(props) {
                                     </Typography>
                                 </Stack>
                                
-                               { Team.length > 0 &&
+                               { localStorage.getItem("Role") === "Player" &&
                                
                           
                                 <Stack direction='row' sx={{ justifyContent: 'space-between', padding: 2 }}>
@@ -367,7 +367,7 @@ export default function Profile(props) {
                                         You are Auctioned By Team
                                     </Typography>
                                     <Typography variant="body2" style={{ color: '#555' }}>
-                                       {Team && Team[0].teamname}
+                                       {Team && Team}
                                     </Typography>
                                 </Stack>
                                 }

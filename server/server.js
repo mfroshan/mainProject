@@ -386,8 +386,9 @@ const conn = mysql.createConnection({
     app.post('/updateMstatus',(req,res)=>{
 
         const id = req.body.id;
-        conn.query("call updateMatchStatus(?)",
-        [id],
+        const sts = req.body.sts;
+        conn.query("call updateMatchStatus(?,?)",
+        [id,sts],
         (err,result) => {
 
                 if(err){

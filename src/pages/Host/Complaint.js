@@ -102,7 +102,7 @@ export default function Complaint() {
   
       const display = () =>{
         
-        let mid = localStorage.getItem("HostID");
+        const mid = localStorage.getItem("HostID");
 
         axios.post("http://localhost:3001/AuctionRequest",{
             mid: mid,

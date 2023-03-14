@@ -21,7 +21,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 export default function AddComplaint(details) {
 
-  // console.log(details.data);
+  
 
   const [posData , setPosData ] = useState([]);
 
@@ -129,11 +129,6 @@ export default function AddComplaint(details) {
    const mid = localStorage.getItem("mid");
    const tid = localStorage.getItem("TeamID");
 
-   console.log(mid);
-   console.log(tid);
-   console.log(values.reason);
-   console.log(multiplefile);
-   console.log(values.selectplayer);
 
   Axios.post("http://localhost:3001/insertReq", {
 
@@ -154,10 +149,10 @@ export default function AddComplaint(details) {
   }
 
   
+   if(!update){
     insertreq();
-  
-    
-   
+   } 
+
     details.submit();
     alertTimeOut();
   };
@@ -325,7 +320,7 @@ export default function AddComplaint(details) {
           {...getFieldProps('selectplayer')}
           error = {Boolean(touched.selectplayer &&  errors.selectplayer)}
           helperText = {touched.selectplayer && errors.selectplayer}
-          onBlur = {()=>{
+          onPointerLeave = {()=>{
             selectplayer(values.selectplayer);
             console.log(values.selectplayer);
           }}
