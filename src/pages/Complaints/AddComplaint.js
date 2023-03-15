@@ -140,20 +140,21 @@ export default function AddComplaint(details) {
     
   }).then((response) =>{
     console.log(response.data[0]);
+    
     if(response.data[0]==='d'){
-      alert("Data Exist!");
+      alert("Request Exist!");
     }
     }).catch(() => {
       console.log('No internet connection found. App is running in offline mode.');
     });
+    details.submit();
   }
 
   
-   if(!update){
+   
     insertreq();
-   } 
+    
 
-    details.submit();
     alertTimeOut();
   };
 
@@ -320,7 +321,7 @@ export default function AddComplaint(details) {
           {...getFieldProps('selectplayer')}
           error = {Boolean(touched.selectplayer &&  errors.selectplayer)}
           helperText = {touched.selectplayer && errors.selectplayer}
-          onPointerLeave = {()=>{
+          onBlur = {()=>{
             selectplayer(values.selectplayer);
             console.log(values.selectplayer);
           }}

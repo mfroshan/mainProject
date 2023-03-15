@@ -168,10 +168,11 @@ export default function MatchesAuction() {
   const isUserNotFound = filteredUsers.length === 0;
 
  
-  const startAuction = (id,sts) => {
+  const startAuction = (id,sts,mname) => {
     axios.post("http://localhost:3001/updateMstatus",{
       id:id,
       sts:sts,
+      name:mname,
     }).then((res) => {
       display(); 
    }).catch((error) => {
@@ -180,6 +181,9 @@ export default function MatchesAuction() {
       });
  }
 
+ const sendMSg = () => {
+    
+ }
 
   return (
     <Page title="Auctions Available">
@@ -253,7 +257,7 @@ export default function MatchesAuction() {
                               color="success"
                               onClick={()=>{
                                 console.log('Start Auction');  
-                                startAuction(match_id,bstatus)        
+                                startAuction(match_id,bstatus,matchfname+" "+matchlname)        
                               }}
                               >
                                 Start Auction
@@ -267,7 +271,7 @@ export default function MatchesAuction() {
                               color="error"
                               onClick={()=>{
                                 console.log('Start Auction');  
-                                startAuction(match_id,bstatus)        
+                                startAuction(match_id,bstatus,matchfname+" "+matchlname)        
                               }}
                               >
                                 Close Auction

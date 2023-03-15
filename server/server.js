@@ -1,8 +1,7 @@
-
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
-
+var unirest = require("unirest");
 
 const app = express();
 
@@ -382,11 +381,35 @@ const conn = mysql.createConnection({
     });
 
     // updateMstatus
+    const  sentSMS = (matchname,number) => {
+        
+
+                var req = unirest("POST", "https://www.fast2sms.com/dev/bulkV2");
+
+                req.headers({
+                "authorization": "rjx5chuRNISbaePp3g1WoHUkKDJBYQzMAs4v9On6tw0lF2CmdVFumGPLgfiUtMr3V6IWOaK40TcCQBbH"
+                });
+
+                req.form({
+                "sender_id": "IMPRT",
+                "message": `Auction for ${matchname} gonna start now,Please join http://localhost:3000/ and best wishes!..`,
+                "route": "q",
+                "numbers": number,
+                });
+                
+                req.end(function (res) {
+                    if (res.error) throw new Error(res.error);
+                
+                    console.log(res.body);
+                });
+        }
+
 
     app.post('/updateMstatus',(req,res)=>{
 
         const id = req.body.id;
         const sts = req.body.sts;
+        const name = req.body.name;
         conn.query("call updateMatchStatus(?,?)",
         [id,sts],
         (err,result) => {
@@ -400,6 +423,24 @@ const conn = mysql.createConnection({
                     console.log("Something went Wrong!");
                 }
         });
+        if(sts===0){
+        let number = "";
+        conn.query("select team_number from tbl_team where match_id=?",
+        [id],
+        (err,result) => {
+
+            if(err){
+                console.log(err);
+            }else if(result.length > 0 ) {
+                
+                number = result.map(function(k){return k.team_number}).join(",");
+                sentSMS(name,number);
+            }else{
+                console.log("Something went Wrong!");
+            }
+    })
+}
+
     });
 
 
