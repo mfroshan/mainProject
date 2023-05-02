@@ -29,15 +29,14 @@ export default function AddHost(details) {
   
   const [type, setType] = useState("Host");
   
-  
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
   const validSchema = Yup.object().shape({
     fname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('First Name is required'),
     lname: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Last Name is required'),
-    Mobnum: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Mobile is required'),
+    Mobnum: Yup.string().matches(phoneRegExp, 'Phone number is not valid').required('Mobile is required').min(10,'Not a valid Number').max(10,'Not a valid Number'),
     username: Yup.string().email('Not a valid Email!').required('Email is required'), 
     password: Yup.string().matches(/^\S/, 'Whitespace is not allowed').required('Password is required'),
-    
   });
 
 
@@ -61,15 +60,13 @@ export default function AddHost(details) {
   });
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
-  console.log(formik);
+ 
 
   const handleFileUpload =  async (e) => {
     const filename = e.target.files[0];
   
     setFilename(e.target.files.data);
     console.log(e.target.files[0]);
-    
-    console.log(fname)
   
     const base64Value  = await convertBase64(filename);
   

@@ -1,6 +1,5 @@
 import { filter } from 'lodash';
 import axios from 'axios';
-import { sentenceCase } from 'change-case';
 import { useState, useEffect, useRef } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
@@ -18,9 +17,7 @@ import {
   Card,
   Table,
   Stack,
-  Avatar,
   Button,
-  Checkbox,
   TableRow,
   TableBody,
   TableCell,
@@ -36,7 +33,7 @@ import Label from '../components/label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../sections/@dashboard/user';
+import { UserListHead, UserListToolbar} from '../sections/@dashboard/user';
 import AddHost from './AddHost';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';

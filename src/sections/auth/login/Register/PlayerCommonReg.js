@@ -9,7 +9,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import FormControl from '@mui/material/FormControl';
-import { Link, Stack, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Stack, IconButton, InputAdornment, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -20,8 +20,8 @@ import Iconify from '../../../../components/iconify';
 import { reject } from 'lodash';
 
 import DisplayRazorpay from './Razorpay/payment';
+import imageCompression from 'browser-image-compression';
 
-// import Button from 'src/theme/overrides/Button';
 
 // ----------------------------------------------------------------------
 
@@ -36,8 +36,6 @@ const showToastMsgFail  = (value) => {
 export default function PlayerCommonReg() {
 
   const navigate = useNavigate();
-
-  const [ mid , setmid ] = useState();
 
   const [posData , setPosData ] = useState([]);
 
@@ -61,16 +59,23 @@ export default function PlayerCommonReg() {
 
   const [amt , setAmt] = useState();
 
-  // const handleChange = () => {
-    
-  //   console.log("postion:".position);
-  // };
 
-  // const handleClick = () => {
-  //   navigate('/dashboard', { replace: true });
+  async function handleImageUpload(event) {
 
-
-  // };
+    const imageFile = event.target.files[0];
+  
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920
+    }
+    try {
+      const compressedFile = await imageCompression(imageFile, options);
+      console.log(compressedFile.size/1024/1024);
+    } catch (error) {
+      console.log(error);
+    }
+  
+  }
 
   const handlecertificateUpload = async (e) => {
     const filename = e.target.files[0];
@@ -100,11 +105,6 @@ export default function PlayerCommonReg() {
         }
       })
   }
-  
-
-  
-  let { id } = useParams();
-
   
 
   const paymentRes = async () =>{
@@ -160,7 +160,6 @@ export default function PlayerCommonReg() {
   
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
-  console.log(formik);
 
  
 
@@ -170,10 +169,7 @@ export default function PlayerCommonReg() {
   setFilename(e.target.files.data);
   console.log(e.target.files[0]);
   
-  console.log(fname)
-
   const base64value  = await convertBase64(filename);
-
   setBase64value(base64value);
   console.log(base64value);
 }
@@ -198,7 +194,6 @@ const convertBase64 =  (filename) =>{
 const getMatch = () =>{
     Axios.post("http://localhost:3001/matchDetailsadmin",{
     }).then((response) =>{
-      console.log(response.data);
       if(response.data.length > 0 ){        
           console.log(response.data[0])
           setMacthDetails(response.data[0])        
@@ -230,12 +225,12 @@ const getMatch = () =>{
       cert:base64cert,
 
     }).then((response) =>{
-      console.log(response.data[0][0]);
+      // console.log(response.data[0][0]);
       if(response.data[0][0].status === 0){        
           navigate('/login',{replace:true});
       }
       else{
-        console.log(response.data[0][0].msg)
+        // console.log(response.data[0][0].msg)
         showToastMsgFail(response.data[0][0].msg);
        }
       });
@@ -249,7 +244,7 @@ const getPosition = () => {
   }).then((response) =>{
     console.log(response.data);
     if(response.data.length > 0 ){        
-        console.log(response.data[0])
+        // console.log(response.data[0])
         setPosData(response.data[0])        
     }
     else{
@@ -280,7 +275,7 @@ const getAmt = () => {
   }).then((response) =>{
     console.log(response.data);
     if(response.data.length > 0 ){        
-        console.log(response.data[0][0].preg_amt);
+        //console.log(response.data[0][0].preg_amt);
         setAmt(response.data[0][0].preg_amt);
         console.log(amt);
   }
@@ -411,10 +406,7 @@ const getAmt = () => {
            helperText={touched.selectpos && errors.selectpos}
            error={Boolean(touched.selectpos && errors.selectpos)}
           value={ values.selectpos ? values.selectpos : "" }
-          // onChange={
-          //    (e)=>{
-          //     setPosition(e.target.value) 
-          // }}
+
         >
           
           { posData.map( (data) => {

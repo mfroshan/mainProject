@@ -5,7 +5,8 @@ var unirest = require("unirest");
 
 const app = express();
 
-app.use(express.json());
+
+app.use(express.json({limit: '10000000mb'}));
 app.use(cors());
 
 
@@ -26,8 +27,6 @@ const conn = mysql.createConnection({
         password: '',
         database: 'auction',
     });
-
- // socket 
 
     const Server = app.listen(3001,() => {
         console.log("Listening on port 3001");
