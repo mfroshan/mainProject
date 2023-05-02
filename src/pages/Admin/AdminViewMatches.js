@@ -270,23 +270,7 @@ export default function AdminViewMatches() {
                               {matchfname} {matchlname}
                             </Typography>
                         </TableCell>
-                        <TableCell component="th" scope="row" sx={{cursor: "pointer"}}>
-                            {/* <StatusMenu matchid={match_id} bstatus={bstatus}/> */}
-                            <Button
-                                variant='contained'
-                                onClick={()=>{
-                                    navigate('/dashboard/auctiondisplay',
-                                    { state:
-                                      {
-                                        mid :match_id,
-                                      }
-                                    })
-                                  }}
-                                >View Auction
-                                </Button>
-                           </TableCell>
                            <TableCell component="th" scope="row" sx={{cursor: "pointer"}}>
-                            {/* <StatusMenu matchid={match_id} bstatus={bstatus}/> */}
                             <Button
                                       variant='contained'
                                       onClick={()=>{

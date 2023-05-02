@@ -250,7 +250,7 @@ export default function MatchesAuction() {
                               </Button>
                            </TableCell>
 
-                           {bstatus===1 &&
+                           {bstatus===0 &&
                            <TableCell scope="row" sx={{cursor: "pointer"}}>
                               <Button
                               variant='contained'
@@ -264,7 +264,7 @@ export default function MatchesAuction() {
                               </Button>
                            </TableCell>
                           }
-                            {bstatus===0 &&
+                            {bstatus===1 &&
                            <TableCell  scope="row" sx={{cursor: "pointer"}}>
                               <Button
                               variant='contained'

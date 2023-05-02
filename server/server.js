@@ -321,7 +321,28 @@ const conn = mysql.createConnection({
         });
     });
 
+    // get all count
     
+    app.post('/getCountofAll',(req,res)=>{
+
+        const id = req.body.id;
+        const role = req.body.role;
+        conn.query("call getCountAll(?,?)",
+        [id,role],
+        (err,result) => {
+
+                if(err){
+                    console.log(err);
+                }else if(result.length > 0 ) {
+                    console.log(result);
+                    res.send(result);
+                }else{
+                    console.log("No data");
+                }
+        });
+    });
+
+
 //get postion detaails
     app.post('/getPos',(req,res)=>{
 
@@ -423,6 +444,7 @@ const conn = mysql.createConnection({
                     console.log("Something went Wrong!");
                 }
         });
+        console.log(sts);
         if(sts===0){
         let number = "";
         conn.query("select team_number from tbl_team where match_id=?",
